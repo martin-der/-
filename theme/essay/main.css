@@ -39,10 +39,29 @@
 	font-weight: 100;
 	src: local('Indie Flower'), url(./font/IndieFlower.ttf)
 }
-/*@import 'https://fonts.googleapis.com/css?family=Indie+Flower';*/
+@font-face {
+	font-family: 'Pacifico';
+	font-style: normal;
+	font-weight: 100;
+	src: local('Pacifico'), url(./font/Pacifico.ttf)
+}
+@font-face {
+	font-family: 'Dancing Script Bold';
+	font-style: bold;
+	font-weight: 100;
+	src: local('Dancing Script-Bold'), url(./font/DancingScript-Bold.ttf)
+}
+@font-face {
+	font-family: 'Dancing Script';
+	font-style: normal;
+	font-weight: 100;
+	src: local('Dancing Script'), url(./font/DancingScript.ttf)
+}
+/*@import 'https://fonts.googleapis.com/css?family=Indie+Flower|Pacifico';*/
 
 body {
 	background-color : white;
+	font-family: 'Pacifico', cursive;
 }
 
 /*hr {
@@ -61,7 +80,10 @@ header h1 {
 .breadcrumb
 { 
 	text-align: center;
-} 
+}
+code { 
+	font-family: 'Indie Flower', cursive;
+}
 
 .main-container {
 	padding: 8px;
@@ -70,7 +92,6 @@ header h1 {
 	border-right: 2px solid #353535;
 	border-bottom: 2px solid #353535;
 	background-color: #fffff1;
-	font-family: 'Indie Flower', cursive;
 }
 .sub-container {
 	border-color: rgb(63, 63, 63);
