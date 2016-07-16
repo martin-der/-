@@ -1,0 +1,55 @@
+/* Terminal - Canard HTTPD Template */
+
+
+@font-face {
+  font-family: 'AdvancedLedBoard7';
+  font-style: normal;
+  font-weight: 400;
+  src: local('AdvancedLedBoard7'), local('AdvancedLedBoard7-Regular'), url(./font/advanced_led_board-7.ttf)
+}
+@font-face {
+  font-family: 'Twobit';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Twobit'), local('Twobit-Regular'), url(./font/Twobit.ttf)
+}
+
+body {
+	background-color : black;
+	background-image : none;
+
+	color : green;
+}
+
+hr {
+	border: 0;
+    border-bottom: 1px dashed #008000;
+    background: rgba(0, 0, 0, 0);
+}
+
+header h1 {
+	color: green;
+	font-size : 2.8em;
+	font-family : AdvancedLedBoard7	;
+}
+
+.main-container {
+	background-color: black;
+	border-radius: 0px;
+	border-width: 2px;
+	border-color: green;
+	border-style: solid;
+}
+.sub-container {
+	border-radius: 0px;
+	border-width: 1px;
+	border-color: green;
+	border-style: solid;
+	padding: 4px 14px 4px 14px;
+}
+
+.breadcrumb
+{ 
+	text-align: center;
+}
+

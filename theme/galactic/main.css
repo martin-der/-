@@ -1,0 +1,390 @@
+/* Galactic - Canard HTTPD Template */
+
+
+@font-face {
+  font-family: 'IndividigitalBlack';
+  font-style: normal;
+  font-weight: 400;
+  src: local('IndividigitalBlack'), local('IndividigitalBlack-Regular'), url(./font/Individigital_black.ttf)
+}
+
+@keyframes background-scroll {
+	from { background-position: 0 0; }
+	to { background-position: 100% 0; }
+}
+@-webkit-keyframes background-scroll {
+	from { background-position: 0 0; }
+	to { background-position: 100% 0; }
+}
+
+/*glow for webkit*/
+@-webkit-keyframes glow-red {
+  from {
+    text-shadow: 0 0 10px #fff,
+               0 0 20px  #fff,
+               0 0 30px  #fff,
+               0 0 40px  #FF1177,
+               0 0 70px  #FF1177,
+               0 0 80px  #FF1177,
+               0 0 100px #FF1177,
+               0 0 150px #FF1177;
+  }
+  to {
+    text-shadow: 0 0 5px #fff,
+               0 0 10px #fff,
+               0 0 15px #fff,
+               0 0 20px #FF1177,
+               0 0 35px #FF1177,
+               0 0 40px #FF1177,
+               0 0 50px #FF1177,
+               0 0 75px #FF1177;
+  }
+}
+
+@-webkit-keyframes glow-blue {
+  from {
+    text-shadow: 0 0 10px #fff,
+               0 0 20px  #fff,
+               0 0 30px  #fff,
+               0 0 40px  #228DFF,
+               0 0 70px  #228DFF,
+               0 0 80px  #228DFF,
+               0 0 100px #228DFF,
+               0 0 150px #228DFF;
+  }
+  to {
+    text-shadow: 0 0 5px #fff,
+               0 0 10px #fff,
+               0 0 15px #fff,
+               0 0 20px #228DFF,
+               0 0 35px #228DFF,
+               0 0 40px #228DFF,
+               0 0 50px #228DFF,
+               0 0 75px #228DFF;
+  }
+}
+@-webkit-keyframes glow-lightblue {
+  from {
+    text-shadow: 0 0 10px #fff,
+               0 0 20px  #fff,
+               0 0 30px  #fff,
+               0 0 40px  #52CDFF,
+               0 0 70px  #52CDFF,
+               0 0 80px  #52CDFF,
+               0 0 100px #52CDFF,
+               0 0 150px #52CDFF;
+  }
+  to {
+    text-shadow: 0 0 5px #fff,
+               0 0 10px #fff,
+               0 0 15px #fff,
+               0 0 20px #52CDFF,
+               0 0 35px #52CDFF,
+               0 0 40px #52CDFF,
+               0 0 50px #52CDFF,
+               0 0 75px #52CDFF;
+  }
+}
+
+@-webkit-keyframes glow-yellow {
+  from {
+    text-shadow: 0 0 10px #fff,
+               0 0 20px  #fff,
+               0 0 30px  #fff,
+               0 0 40px  #FFDD1B,
+               0 0 70px  #FFDD1B,
+               0 0 80px  #FFDD1B,
+               0 0 100px #FFDD1B,
+               0 0 150px #FFDD1B;
+  }
+  to {
+    text-shadow: 0 0 5px #fff,
+               0 0 10px #fff,
+               0 0 15px #fff,
+               0 0 20px #FFDD1B,
+               0 0 35px #FFDD1B,
+               0 0 40px #FFDD1B,
+               0 0 50px #FFDD1B,
+               0 0 75px #FFDD1B;
+  }
+}
+
+@-webkit-keyframes glow-green {
+  from {
+    text-shadow: 0 0 10px #fff,
+               0 0 20px  #fff,
+               0 0 30px  #fff,
+               0 0 40px  #B6FF00,
+               0 0 70px  #B6FF00,
+               0 0 80px  #B6FF00,
+               0 0 100px #B6FF00,
+               0 0 150px #B6FF00;
+  }
+  to {
+    text-shadow: 0 0 5px #fff,
+               0 0 10px #fff,
+               0 0 15px #fff,
+               0 0 20px #B6FF00,
+               0 0 35px #B6FF00,
+               0 0 40px #B6FF00,
+               0 0 50px #B6FF00,
+               0 0 75px #B6FF00;
+  }
+}
+
+@-webkit-keyframes glow-orange {
+  from {
+    text-shadow: 0 0 10px #fff,
+               0 0 20px  #fff,
+               0 0 30px  #fff,
+               0 0 40px  #FF9900,
+               0 0 70px  #FF9900,
+               0 0 80px  #FF9900,
+               0 0 100px #FF9900,
+               0 0 150px #FF9900;
+  }
+  to {
+    text-shadow: 0 0 5px #fff,
+               0 0 10px #fff,
+               0 0 15px #fff,
+               0 0 20px #FF9900,
+               0 0 35px #FF9900,
+               0 0 40px #FF9900,
+               0 0 50px #FF9900,
+               0 0 75px #FF9900;
+  }
+}
+
+@-webkit-keyframes glow-violet {
+  from {
+    text-shadow: 0 0 10px #fff,
+               0 0 20px #fff,
+               0 0 30px #fff,
+               0 0 40px #ff00de,
+               0 0 70px #ff00de,
+               0 0 80px #ff00de,
+               0 0 100px #ff00de,
+               0 0 150px #ff00de;
+  }
+  to {
+    text-shadow: 0 0 5px #fff,
+               0 0 10px #fff,
+               0 0 15px #fff,
+               0 0 20px #ff00de,
+               0 0 35px #ff00de,
+               0 0 40px #ff00de,
+               0 0 50px #ff00de,
+               0 0 75px #ff00de;
+  }
+}
+
+/*glow*/
+@keyframes glow-red {
+  from {
+    text-shadow: 0 0 10px #fff,
+               0 0 20px  #fff,
+               0 0 30px  #fff,
+               0 0 40px  #FF1177,
+               0 0 70px  #FF1177,
+               0 0 80px  #FF1177,
+               0 0 100px #FF1177,
+               0 0 150px #FF1177;
+  }
+  to {
+    text-shadow: 0 0 5px #fff,
+               0 0 10px #fff,
+               0 0 15px #fff,
+               0 0 20px #FF1177,
+               0 0 35px #FF1177,
+               0 0 40px #FF1177,
+               0 0 50px #FF1177,
+               0 0 75px #FF1177;
+  }
+}
+
+@keyframes glow-blue {
+  from {
+    text-shadow: 0 0 10px #fff,
+               0 0 20px  #fff,
+               0 0 30px  #fff,
+               0 0 40px  #228DFF,
+               0 0 70px  #228DFF,
+               0 0 80px  #228DFF,
+               0 0 100px #228DFF,
+               0 0 150px #228DFF;
+  }
+  to {
+    text-shadow: 0 0 5px #fff,
+               0 0 10px #fff,
+               0 0 15px #fff,
+               0 0 20px #228DFF,
+               0 0 35px #228DFF,
+               0 0 40px #228DFF,
+               0 0 50px #228DFF,
+               0 0 75px #228DFF;
+  }
+}
+@keyframes glow-lightblue {
+  from {
+    text-shadow: 0 0 10px #fff,
+               0 0 20px  #fff,
+               0 0 30px  #fff,
+               0 0 40px  #52CDFF,
+               0 0 70px  #52CDFF,
+               0 0 80px  #52CDFF,
+               0 0 100px #52CDFF,
+               0 0 150px #52CDFF;
+  }
+  to {
+    text-shadow: 0 0 5px #fff,
+               0 0 10px #fff,
+               0 0 15px #fff,
+               0 0 20px #52CDFF,
+               0 0 35px #52CDFF,
+               0 0 40px #52CDFF,
+               0 0 50px #52CDFF,
+               0 0 75px #52CDFF;
+  }
+}
+
+@keyframes glow-yellow {
+  from {
+    text-shadow: 0 0 10px #fff,
+               0 0 20px  #fff,
+               0 0 30px  #fff,
+               0 0 40px  #FFDD1B,
+               0 0 70px  #FFDD1B,
+               0 0 80px  #FFDD1B,
+               0 0 100px #FFDD1B,
+               0 0 150px #FFDD1B;
+  }
+  to {
+    text-shadow: 0 0 5px #fff,
+               0 0 10px #fff,
+               0 0 15px #fff,
+               0 0 20px #FFDD1B,
+               0 0 35px #FFDD1B,
+               0 0 40px #FFDD1B,
+               0 0 50px #FFDD1B,
+               0 0 75px #FFDD1B;
+  }
+}
+
+@keyframes glow-green {
+  from {
+    text-shadow: 0 0 10px #fff,
+               0 0 20px  #fff,
+               0 0 30px  #fff,
+               0 0 40px  #B6FF00,
+               0 0 70px  #B6FF00,
+               0 0 80px  #B6FF00,
+               0 0 100px #B6FF00,
+               0 0 150px #B6FF00;
+  }
+  to {
+    text-shadow: 0 0 5px #fff,
+               0 0 10px #fff,
+               0 0 15px #fff,
+               0 0 20px #B6FF00,
+               0 0 35px #B6FF00,
+               0 0 40px #B6FF00,
+               0 0 50px #B6FF00,
+               0 0 75px #B6FF00;
+  }
+}
+
+@keyframes glow-orange {
+  from {
+    text-shadow: 0 0 10px #fff,
+               0 0 20px  #fff,
+               0 0 30px  #fff,
+               0 0 40px  #FF9900,
+               0 0 70px  #FF9900,
+               0 0 80px  #FF9900,
+               0 0 100px #FF9900,
+               0 0 150px #FF9900;
+  }
+  to {
+    text-shadow: 0 0 5px #fff,
+               0 0 10px #fff,
+               0 0 15px #fff,
+               0 0 20px #FF9900,
+               0 0 35px #FF9900,
+               0 0 40px #FF9900,
+               0 0 50px #FF9900,
+               0 0 75px #FF9900;
+  }
+}
+
+@keyframes glow-violet {
+  from {
+    text-shadow: 0 0 10px #fff,
+               0 0 20px #fff,
+               0 0 30px #fff,
+               0 0 40px #ff00de,
+               0 0 70px #ff00de,
+               0 0 80px #ff00de,
+               0 0 100px #ff00de,
+               0 0 150px #ff00de;
+  }
+  to {
+    text-shadow: 0 0 5px #fff,
+               0 0 10px #fff,
+               0 0 15px #fff,
+               0 0 20px #ff00de,
+               0 0 35px #ff00de,
+               0 0 40px #ff00de,
+               0 0 50px #ff00de,
+               0 0 75px #ff00de;
+  }
+}
+
+
+body {
+	background-image : url(./image/star-space-hubble-pleiades.jpg);
+	background-repeat: repeat;
+
+	color : white;
+
+	        animation : background-scroll 220s linear infinite;
+	-webkit-animation : background-scroll 220s linear infinite;
+}
+
+hr {
+	border: 0;
+	height: 1px;
+	background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgb(161, 255, 251), rgba(0, 0, 0, 0));
+}
+
+
+.main-container 
+{ 
+	background-color: rgba(0,0,0,0.5); 
+	border-radius: 15px; 
+} 
+.sub-container {
+	background-color: rgba(0,0,0,0.2); 
+	border-radius: 10px; 
+}
+
+/*	box-shadow: 0px 0px 5px #fff; */
+
+header td.title  {
+	vertical-align : top;
+}
+
+header h1 { 
+	color: rgb(236, 194, 236); 
+	font-family : IndividigitalBlack;
+	font-size : 1.8em;
+	/*text-shadow: -1px 1px 8px #ffc, 1px -1px 8px #fff;*/
+	-webkit-animation: glow-violet 1.5s ease-in-out infinite alternate;
+	-moz-animation: glow-violet 1.5s ease-in-out infinite alternate;
+	animation: glow-violet 1.5s ease-in-out infinite alternate; 
+} 
+
+.breadcrumb
+{ 
+	text-align: center;
+} 
+

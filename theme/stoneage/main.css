@@ -1,0 +1,64 @@
+/* Stone Age - Canard HTTPD Template */
+
+
+@font-face {
+  font-family: 'AcadianRunesRegular';
+  font-style: normal;
+  font-weight: 400;
+  src: local('AcadianRunesRegular'), local('AcadianRunesRegular-Regular'), url(./font/Acadian_Runes-Regular.ttf)
+}
+
+body {
+	background-color : white;
+	background-image : none;
+
+	background: -webkit-linear-gradient(blue, rgb(0, 153, 255), rgb(0, 214, 255), cyan, rgb(145, 246, 255), rgb(231, 171, 138), rgb(255, 71, 0), black);
+	background: linear-gradient(blue, rgb(0, 153, 255), rgb(0, 214, 255), cyan, rgb(145, 246, 255), rgb(231, 171, 138), rgb(255, 71, 0), black);
+
+	color : black;
+}
+
+hr {
+	border: 0;
+	height: 1px;
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgb(255, 0, 0), rgba(0, 0, 0, 0));
+}
+
+.main-container {
+	background-image : url(./image/rock_floor_im42.jpg);
+	background-repeat: repeat;
+	/*background-color: rgb(139, 124, 124);*/
+	border-radius: 4px;
+	padding: 8px;
+	border-top: 2px solid #CCCCCC;
+	border-left: 2px solid #CCCCCC;
+	border-right: 2px solid #353535;
+	border-bottom: 2px solid #353535;
+}
+.sub-container {
+	border-color: rgb(63, 63, 63);
+	border-style: solid;
+	border-width: 1px;
+	background-color: rgba(179, 164, 164, 0.3);
+	border-radius: 4px;
+	padding: 4px 14px 4px 14px;
+	/*box-shadow: inset 0 0 13px -6px rgb(0, 0, 0);*/
+	/*box-shadow: inset 12px 0 15px -4px rgb(0,0,0), inset -12px 0 8px -4px rgb(255,255,255);*/
+	box-shadow:
+		inset 10px 10px 0px -7px rgba(255,0,0,0.5),
+		inset -10px 0px 10px -7px rgba(0,0,0,0.5),
+		inset 10px 10px 0px -7px rgba(0,255,0,0.5),
+		inset 10px 0px 10px -7px rgba(0,0,0,0.5),
+}
+
+header h1 {
+	color: black;
+	font-size : 3.0em;
+	font-family: AcadianRunesRegular;
+}
+
+.breadcrumb
+{ 
+	text-align: center;
+} 
+

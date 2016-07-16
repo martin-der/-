@@ -1,0 +1,28 @@
+/* Subtle - Canard HTTPD Template */
+
+
+body {
+	background-color : #DDD;
+	background-image : none;
+
+	color : black;
+}
+
+.main-container {
+	background-color: silver;
+	border-radius: 4px;
+}
+
+header td.title  {
+	vertical-align : middle;
+}
+header h1 {
+	color: blue;
+	font-size : 2.0em;
+}
+
+.breadcrumb
+{ 
+	text-align: center;
+} 
+

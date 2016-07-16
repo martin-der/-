@@ -1,0 +1,41 @@
+/* Deep Ocean - Canard HTTPD Template */
+
+
+@font-face {
+  font-family: 'Beatles';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Beatles'), local('Beatles'), url(./font/beatles.ttf)
+}
+
+body {
+	background-color : rgb(0,0,45);
+	background-image : none;
+	background : -webkit-radial-gradient( center, circle, rgba(0,0,150,0), rgb(0,0,45));
+	background :         radial-gradient( center, circle, rgba(0,0,150,0), rgb(0,0,45));
+
+	color : rgb(116, 154, 184);
+}
+
+.main-container {
+	background-color: rgba(0, 0, 173, 0.32);
+	border-radius: 20px;
+}
+
+.sub-container {
+	background-color: rgba(134, 206, 206, 0.2);
+	border-radius: 13px;
+}
+
+header h1 {
+	color: rgb(110, 170, 179, 0.8);
+	font-size : 3.8em;
+	font-family : Beatles;
+}
+
+.breadcrumb
+{ 
+	text-align: center;
+} 
+
+

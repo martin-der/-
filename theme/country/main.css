@@ -1,0 +1,46 @@
+/* Country - Canard HTTPD Template */
+
+a { 
+	font-style: normal; 
+}
+
+
+@font-face {
+  font-family: 'BurnstownDam';
+  font-style: normal;
+  font-weight: 400;
+  src: local('BurnstownDam'), local('BurnstownDam-Regular'), url(./font/burnstown_dam.ttf)
+}
+
+body {
+	background-color : rgb(90, 50, 0);
+	background-image : none;
+
+	color : rgb(134, 206, 206);
+}
+
+hr {
+	border: 0;
+	height: 1px;
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0), yellow, rgba(0, 0, 0, 0));
+}
+
+.main-container {
+	background-color: rgb(0, 77, 0);
+	border-radius: 5px;
+}
+
+header td.title  {
+	vertical-align : middle;
+}
+header h1 {
+	color: yellow;
+	font-size : 3.8em;
+	font-family : BurnstownDam;
+}
+
+.breadcrumb
+{ 
+	text-align: center;
+} 
+
