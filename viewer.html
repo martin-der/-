@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	
+	<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+	<link rel="stylesheet" href="https://cdn.rawgit.com/martin-work/web-util/master/static/css/common.css" />
+	<script type="text/javascript" src="https://cdn.rawgit.com/martin-work/web-util/master/static/js/misc.js"></script>
+	<link rel="stylesheet" href="https://cdn.rawgit.com/martin-work/web-util/master/static/css/stackedit/export.css" />
+	<script type="text/javascript" src="js/js.cookie.js"></script>
+	<script type="text/javascript" src="js/mdu.js"></script>
+
+
+	<script type="text/javascript" src="js/jquery-3.1.0.min.js"></script>
+	<script type="text/javascript" src="js/jquery.blockUI.js"></script>
+	<script type="text/javascript" src="js/showdown.min.js"></script>
+	<script type="text/javascript" src="js/markdown-display.js"></script>
+	<!--link rel="stylesheet" href="css/markdown.css"></script-->
+
+	<script type="text/javascript" src="js/theme.js"></script>
+	<link id="theme_reset_css" rel="stylesheet" href="theme/reset.css" />
+	<link id="theme_main_css" rel="stylesheet" href="theme/subtle/main.css" />
+	<link id="theme_mandatory_css" rel="stylesheet" href="theme/mandatory.css" />
+	
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.5.0/styles/default.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.5.0/highlight.min.js"></script>
+
+</head>
+<body>
+
+	<script id="markdown-display_on-the-fly-loader" ></script>
+ 
+	<script  type="text/javascript">
+	//<![CDATA[
+			var content_selector = "div.container>div.content";
+			var title_selector = "span.title";
+			var all_selector = content_selector+","+title_selector;
+
+			var blockUI_config = {
+				message : null,
+				fadeIn  : 0,
+				fadeOut : 1500,
+				overlayCSS : {
+					backgroundColor : '#fff',
+					opacity : 1
+				}
+			};
+		
+		jQuery(function(){
+			
+			var markdown_source = MarkdownDisplay.BuilderUtil.getURLParameter('md');
+			if (markdown_source) {
+				var markdownBuilder = new MarkdownDisplay.Builder({
+					content : {
+						source : {
+							url_parameter : 'md'
+						},
+						target : {
+							title_selector : title_selector,
+							content_selector : content_selector
+						}
+					},
+					post_process : {
+						done : function() {
+							jQuery(content_selector).find('pre code').each(function(i, block) {
+								hljs.highlightBlock(block);
+							});							
+							jQuery(all_selector).css('visibility','visible').unblock(blockUI_config);
+						},
+						fail : function(url, error) {
+							alert("Unable to load '"+url+"' : "+error );
+						}
+					}
+				});
+				jQuery(all_selector).css('visibility','hidden').block(blockUI_config);
+				markdownBuilder.build();
+			}
+		});
+	//]]>
+	</script>
+
+	<div style="text-align: center">
+		<div style="display: inline-block; text-align: initial;">
+			<table>
+				<tr>
+					<td>
+						<header class="main-container" style="text-align: center">
+
+							<div class="reverse-boo" style="float : right;">
+								<select id="theme">
+									<option value="country">Country</option>
+									<option value="deepocean">Deep Ocean</option>
+									<option value="galactic">Galactic</option>
+									<option value="google">Google</option>
+									<option value="stoneage">Stone Age</option>
+									<option value="subtle">Subtle</option>
+									<option value="terminal">Terminal</option>
+								</select>
+							</div>
+
+							<div style="display: inline-block; text-align: initial;">
+								<table>
+									<tr>
+										<td>
+											<!--img src="image/theme/logo-50px.png?raw" /-->
+										</td>
+										<td>
+											<h1 class="title"><span class="title"></span></h1>
+										</td>
+										<td>
+											<!--img src="image/theme/logo-50px.png" /-->
+										</td>
+									</tr>
+								</table>
+							</div>
+						</header
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<div class="main-container container"><div class="content markdown"></div></div>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<footer class="main-container reverse-boo" style="font-size: 0.8em; text-align : center" >
+							<span>
+								Martin Der <br/>
+								bla bla bla
+							</span>
+						</footer
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</body>
+</html>
