@@ -84,7 +84,7 @@
 						}
 					},
 					post_process : {
-						done : function() {
+						done : function(url,content) {
 							jQuery(content_selector).find('pre>code').each(function(i, block) {
 								hljs.highlightBlock(block);
 							});
@@ -92,14 +92,23 @@
 							jQuery(content_selector).find("a[href]").each(function(){
 								var this_a = jQuery(this);
 								var href = this_a.attr('href');
-								if (!MDU.isAbsoluteURL(href)) {
+								var isAbsolute = MDU.isAbsoluteURL(href);
+								if (!isAbsolute) {
 									//this_a.css('color','red');
 								}
 								if (MarkdownDisplay.BuilderUtil.hasMDSuffix(href)) {
-									this_a.removeAttr('href');
+									//this_a.removeAttr('href');
+									this_a.attr('href','#');
 									//this_a.attr("md-display:href",href);
 									this_a.on('click', function() {
-										markdownBuilder.build({content:{source:{text:null, url_parameter:null, url:href}}});
+										var link_url;
+										if (isAbsolute) {
+											link_url = href;
+										} else {
+											var base_url = url.substring(0, url.lastIndexOf("/"));
+											link_url = base_url+'/'+href;
+										}
+										markdownBuilder.build({content:{source:{text:null, url_parameter:null, url:link_url}}});
 									});
 								}
 							});
