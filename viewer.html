@@ -94,23 +94,26 @@
 								var href = this_a.attr('href');
 								var isAbsolute = MDU.isAbsoluteURL(href);
 								if (!isAbsolute) {
-									this_a.css('color','red');
+									//this_a.css('color','red');
 								}
 								if (MarkdownDisplay.BuilderUtil.hasMDSuffix(href)) {
-									this_a.removeAttr('href');
+									//this_a.removeAttr('href');
 									//this_a.attr('href','#');
 									//this_a.attr("md-display:href",href);
-									this_a.on('click', function() {
-										var link_url;
-										if (isAbsolute) {
-											link_url = href;
-										} else {
-											var base_url = url.substring(0, url.lastIndexOf("/"));
-											link_url = base_url+'/'+href;
+									this_a.on('click', function(event) {
+										if (event.which == 1) {
+											event.preventDefault();
+											var link_url;
+											if (isAbsolute) {
+												link_url = href;
+											} else {
+												var base_url = url.substring(0, url.lastIndexOf("/"));
+												link_url = base_url+'/'+href;
+											}
+											markdownBuilder.build({content:{source:{text:null, url_parameter:null, url:link_url}}});
+											var stateObj = { foo: "bar" };
+											history.pushState(stateObj, "New", location.protocol + '//' + location.host + location.pathname+"?md="+link_url);
 										}
-										markdownBuilder.build({content:{source:{text:null, url_parameter:null, url:link_url}}});
-										var stateObj = { foo: "bar" };
-										history.pushState(stateObj, "New", location.protocol + '//' + location.host + location.pathname+"?md="+link_url);
 									});
 								}
 							});
