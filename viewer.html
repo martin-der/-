@@ -15,6 +15,8 @@
 
 	<script type="text/javascript" src="js/jquery-3.1.0.min.js"></script>
 	<script type="text/javascript" src="js/jquery.blockUI.js"></script>
+	<script src="js/jquery.growl.js" type="text/javascript"></script>
+	<link href="css/jquery.growl.css" rel="stylesheet" type="text/css" />
 	<script type="text/javascript" src="js/showdown.min.js"></script>
 	<script type="text/javascript" src="js/markdown-display.js"></script>
 	<!--link rel="stylesheet" href="css/markdown.css"></script-->
@@ -36,6 +38,9 @@
  
 	<script  type="text/javascript">
 	//<![CDATA[
+		
+		jQuery(function() {
+
 			var content_selector = "div.container>div.content";
 			var title_selector = "span.title";
 			var all_selector = content_selector+","+title_selector;
@@ -49,8 +54,6 @@
 					opacity : 1
 				}
 			};
-		
-		jQuery(function(){
 
 			var build_result;
 
@@ -66,7 +69,7 @@
 					'width': 170,'elementHandlers': specialElementHandlers
 				});
 				doc.save((build_result?build_result.title:'untitled')+'.pdf');
-			}).css('cursor','pointer');  
+			}).css('cursor','pointer');
 			
 			var markdown_source = MarkdownDisplay.BuilderUtil.getURLParameter('md');
 			if (markdown_source) {
@@ -82,13 +85,27 @@
 					},
 					post_process : {
 						done : function() {
-							jQuery(content_selector).find('pre code').each(function(i, block) {
+							jQuery(content_selector).find('pre>code').each(function(i, block) {
 								hljs.highlightBlock(block);
-							});							
+							});
 							jQuery(all_selector).css('visibility','visible').unblock(blockUI_config);
+							jQuery(content_selector).find("a[href]").each(function(){
+								var this_a = jQuery(this);
+								var href = this_a.attr('href');
+								if (!MDU.isAbsoluteURL(href)) {
+									//this_a.css('color','red');
+								}
+								if (MarkdownDisplay.BuilderUtil.hasMDSuffix(href)) {
+									this_a.removeAttr('href');
+									//this_a.attr("md-display:href",href);
+									this_a.on('click', function() {
+										markdownBuilder.build({content:{source:{text:null, url_parameter:null, url:href}}});
+									});
+								}
+							});
 						},
 						fail : function(url, error) {
-							alert("Unable to load '"+url+"' : "+error );
+							jQuery.growl.error({ message: "Unable to load '"+url+"' : "+error });
 						}
 					}
 				});
