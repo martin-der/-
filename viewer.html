@@ -23,6 +23,8 @@
 	<link id="theme_reset_css" rel="stylesheet" href="theme/reset.css" />
 	<link id="theme_main_css" rel="stylesheet" href="theme/subtle/main.css" />
 	<link id="theme_mandatory_css" rel="stylesheet" href="theme/mandatory.css" />
+
+	<script src="js/jspdf.min.js"></script>
 	
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.5.0/styles/default.min.css">
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.5.0/highlight.min.js"></script>
@@ -49,6 +51,22 @@
 			};
 		
 		jQuery(function(){
+
+			var build_result;
+
+			var specialElementHandlers = {
+				'#tools': function (element,renderer) {
+					return true;
+				}
+			};
+
+			jQuery('#download').click(function () {
+				var doc = new jsPDF();
+				doc.fromHTML(jQuery('body>div').html(), 15, 15, {
+					'width': 170,'elementHandlers': specialElementHandlers
+				});
+				doc.save((build_result?build_result.title:'untitled')+'.pdf');
+			}).css('cursor','pointer');  
 			
 			var markdown_source = MarkdownDisplay.BuilderUtil.getURLParameter('md');
 			if (markdown_source) {
@@ -75,30 +93,45 @@
 					}
 				});
 				jQuery(all_selector).css('visibility','hidden').block(blockUI_config);
-				markdownBuilder.build();
+
+				build_result = markdownBuilder.build();
 			}
 		});
 	//]]>
 	</script>
 
-	<div style="text-align: center">
+	<div id="exported-content" style="text-align: center">
 		<div style="display: inline-block; text-align: initial;">
 			<table>
 				<tr>
 					<td>
 						<header class="main-container" style="text-align: center">
 
-							<div class="reverse-boo" style="float : right;">
-								<select id="theme">
-									<option value="country">Country</option>
-									<option value="deepocean">Deep Ocean</option>
-									<option value="essay">Essay</option>
-									<option value="galactic">Galactic</option>
-									<option value="google">Google</option>
-									<option value="stoneage">Stone Age</option>
-									<option value="subtle">Subtle</option>
-									<option value="terminal">Terminal</option>
-								</select>
+							<div id="tools" class="reverse-boo" style="float : right;">
+								<table>
+									<tr>
+										<td colspan="2">
+											<select id="theme">
+												<option value="country">Country</option>
+												<option value="deepocean">Deep Ocean</option>
+												<option value="essay">Essay</option>
+												<option value="galactic">Galactic</option>
+												<option value="google">Google</option>
+												<option value="stoneage">Stone Age</option>
+												<option value="subtle">Subtle</option>
+												<option value="terminal">Terminal</option>
+											</select>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<a id="share">Sh</a>
+										</td>
+										<td>
+											<a id="download">Dl</a>
+										</td>
+									</tr>
+								</table>
 							</div>
 
 							<div style="display: inline-block; text-align: initial;">

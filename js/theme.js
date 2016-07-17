@@ -43,7 +43,7 @@ jQuery(function () {
 		var theme = this.value;
 		
 		if (jQuery.blockUI) {
-			//jQuery.blockUI({ message: '<h1><img src="/-/image/busy.gif" />'+message.theme_loading+'</h1>' });
+			jQuery.blockUI({ message: '<h1>'+'Loading...'+'</h1>' });
 		}
 		try {
 			setTheme ( theme );
@@ -52,7 +52,7 @@ jQuery(function () {
 			}
 		} finally {
 			if (jQuery.blockUI) {
-				//jQuery.unblockUI();
+				jQuery.unblockUI();
 			}
 		}
 
