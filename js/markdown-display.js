@@ -199,9 +199,12 @@ MarkdownDisplay.Builder = function(a) {
 	
 	var builder = { 
 		config : config,
+		result : {},
 		buildPage : function (mdContent, title, targetContent, targetTitle) {
 			var converter = new showdown.Converter();
 			var htmlContent = converter.makeHtml(mdContent);
+
+			this.result.title = title;
 
 			jQuery(targetContent).html(htmlContent);
 			if (title) {
@@ -231,6 +234,10 @@ MarkdownDisplay.Builder = function(a) {
 				throw "When no text is given, 'config.content.from_url_fetcher' must be provided";
 			}
 			this.config.content.from_url_fetcher.load(url);
+
+			this.result.url = url;
+			
+			return this.result;
 		},
 		Util : MarkdownDisplay.BuilderUtil
 	};
