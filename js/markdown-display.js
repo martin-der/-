@@ -123,18 +123,21 @@ MarkdownDisplay.Loader.ViaAjaxLoader = function(a, b) {
 	jQuery.extend(true, this, new MarkdownDisplay.Loader.AbstractLoader(a,b));
 
 	var this_loader = this;
+
+	var load = function (url) {
+		var this_loader_in_load = this_loader;
+
+		var jqXHR = jQuery.ajax( url )
+		.done(function(data, textStatus, jqXHR) {
+			this_loader_in_load.config.callback.done (url, data);
+		})
+		.fail(function(jqXHR, textStatus, errorThrown) {
+			this_loader_in_load.handleFail (url,textStatus+" ("+errorThrown+")");
+		});
+	};
 	
 	jQuery.extend(true, this, {
-		load : function (url) {
-			var jqXHR = jQuery.get( url )
-			.done(function(data, textStatus, jqXHR) {
-				jqXHR.this_MarkdownDisplay_loader.config.callback.done (url, data);
-			})
-			.fail(function(jqXHR, textStatus, errorThrown) {
-				jqXHR.this_MarkdownDisplay_loader.handleFail (url,textStatus+" ("+errorThrown+")");
-			});
-			jqXHR.this_MarkdownDisplay_loader = this_loader;
-		}
+		load : load 
 	});
 	
 	return this_loader;
@@ -142,6 +145,9 @@ MarkdownDisplay.Loader.ViaAjaxLoader = function(a, b) {
 
 
 MarkdownDisplay.BuilderUtil = {
+	hasMDSuffix(name) {
+		return /\.[mM][dD]$/.test(name);
+	},
 	stripMDSuffix : function (name) {
 		var m = name.toString().match(/(.*)\.[mM][dD]$/);
 		if (m && m.length > 1)
@@ -212,7 +218,9 @@ MarkdownDisplay.Builder = function(a) {
 				jQuery(targetTitle).html(title);
 			}
 		},
-		build : function() {
+		build : function(config) {
+			jQuery.extend(true, this.config, config);
+
 			if ( this.config.content.source.text ) {
 				this.buildPage ( this.config.content.source.text, this.config.content.title, this.config.target.content_selector, this.config.target.title_selector );
 				return;
