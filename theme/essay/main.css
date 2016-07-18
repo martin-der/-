@@ -86,12 +86,13 @@ code {
 }
 
 .main-container {
-	padding: 8px;
-	border-top: 2px solid #CCCCCC;
-	border-left: 2px solid #CCCCCC;
-	border-right: 2px solid #353535;
-	border-bottom: 2px solid #353535;
+	padding: 9px;
+	border-top: 1px solid #CCCC9C;
+	border-left: 1px solid #CCCC9C;
+	border-right: 1px solid #353515;
+	border-bottom: 1px solid #353515;
 	background-color: #fffff1;
+	box-shadow : 0 9px 0px 0px rgba(255,255,255,1), 0 9px 0px 0px rgba(255,255,255,1), 7px 0 15px -4px rgba(0, 0, 0, 0.71), -7px 0 15px -4px rgba(0, 0, 0, 0.71);
 }
 .sub-container {
 	border-color: rgb(63, 63, 63);
