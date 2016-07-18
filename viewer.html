@@ -8,6 +8,7 @@
 	<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
 	<link rel="stylesheet" href="https://cdn.rawgit.com/martin-work/web-util/master/static/css/common.css" />
 	<script type="text/javascript" src="https://cdn.rawgit.com/martin-work/web-util/master/static/js/misc.js"></script>
+	<link rel="stylesheet" href="css/viewer.css" />
 	<link rel="stylesheet" href="https://cdn.rawgit.com/martin-work/web-util/master/static/css/stackedit/export.css" />
 	<script type="text/javascript" src="js/js.cookie.js"></script>
 	<script type="text/javascript" src="js/mdu.js"></script>
@@ -93,28 +94,28 @@
 								var this_a = jQuery(this);
 								var href = this_a.attr('href');
 								var isAbsolute = MDU.isAbsoluteURL(href);
-								if (!isAbsolute) {
-									//this_a.css('color','red');
+
+								var real_url;
+								if (isAbsolute) {
+									real_url = href;
+								} else {
+									var base_url = url.substring(0, url.lastIndexOf("/"));
+									real_url = base_url+'/'+href;
 								}
+
 								if (MarkdownDisplay.BuilderUtil.hasMDSuffix(href)) {
-									//this_a.removeAttr('href');
-									//this_a.attr('href','#');
-									//this_a.attr("md-display:href",href);
+									this_a.attr("href","viewer+"+real_url);
+									this_a.addClass('md-viewer');
 									this_a.on('click', function(event) {
 										if (event.which == 1) {
 											event.preventDefault();
-											var link_url;
-											if (isAbsolute) {
-												link_url = href;
-											} else {
-												var base_url = url.substring(0, url.lastIndexOf("/"));
-												link_url = base_url+'/'+href;
-											}
-											markdownBuilder.build({content:{source:{text:null, url_parameter:null, url:link_url}}});
+											markdownBuilder.build({content:{source:{text:null, url_parameter:null, url:real_url}}});
 											var stateObj = { foo: "bar" };
-											history.pushState(stateObj, "New", location.protocol + '//' + location.host + location.pathname+"?md="+link_url);
+											history.pushState(stateObj, "New", location.protocol + '//' + location.host + location.pathname+"?md="+real_url);
 										}
 									});
+								} else {
+									this_a.attr("href",real_url);
 								}
 							});
 						},

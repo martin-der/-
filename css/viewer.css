@@ -1,0 +1,6 @@
+a.md-viewer {
+}
+a.md-viewer::after {	
+	content:url(../image/viewer-link.png);
+}
+
