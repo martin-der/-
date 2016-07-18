@@ -99,8 +99,13 @@
 								if (isAbsolute) {
 									real_url = href;
 								} else {
-									var base_url = url.substring(0, url.lastIndexOf("/"));
-									real_url = base_url+'/'+href;
+									if (href.startsWith('/')) {
+										var doc_location = MDU.getLocation(url);
+										real_url = doc_location.protocol + '//' + doc_location.host + href;
+									} else {
+										var base_url = url.substring(0, url.lastIndexOf("/"));
+										real_url = base_url+'/'+href;
+									}
 								}
 
 								if (MarkdownDisplay.BuilderUtil.hasMDSuffix(href)) {
@@ -181,7 +186,7 @@
 									</tr>
 								</table>
 							</div>
-						</header
+						</header>
 					</td>
 				</tr>
 				<tr>
@@ -196,7 +201,7 @@
 								Martin Der <br/>
 								bla bla bla
 							</span>
-						</footer
+						</footer>
 					</td>
 				</tr>
 			</table>
