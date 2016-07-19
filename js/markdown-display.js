@@ -210,7 +210,10 @@ MarkdownDisplay.Builder = function(a) {
 			var converter = new showdown.Converter();
 			var htmlContent = converter.makeHtml(mdContent);
 
+			this.result.content = mdContent;
 			this.result.title = title;
+			this.result.html_title = title;
+
 
 			jQuery(targetContent).html(htmlContent);
 			if (title) {

@@ -114,9 +114,14 @@
 									this_a.on('click', function(event) {
 										if (event.which == 1) {
 											event.preventDefault();
-											markdownBuilder.build({content:{source:{text:null, url_parameter:null, url:real_url}}});
-											var stateObj = { foo: "bar" };
-											history.pushState(stateObj, "New", location.protocol + '//' + location.host + location.pathname+"?md="+real_url);
+											var result = markdownBuilder.build({content:{source:{text:null, url_parameter:null, url:real_url}}});
+											if (history.pushState) {
+												try {
+													history.pushState(result, result.title, location.protocol + '//' + location.host + location.pathname+"?md="+real_url);
+												} catch (ex) {
+													jQuery.growl.warning({title: 'No history', message: ex});
+												}
+											}
 										}
 									});
 								} else {
@@ -125,7 +130,7 @@
 							});
 						},
 						fail : function(url, error) {
-							jQuery.growl.error({ message: "Unable to load '"+url+"' : "+error });
+							jQuery.growl.error({ title: "Load failed", message: "Loading '"+url+"' : "+error });
 						}
 					}
 				});
