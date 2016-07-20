@@ -39,8 +39,17 @@
  
 	<script  type="text/javascript">
 	//<![CDATA[
+
+		var useHistory = window.onpopstate && window.history.pushState;
 		
-		jQuery(function() {
+		jQuery(function() {    
+			var markdownBuilder = null;
+	
+			if (useHistory) {
+				window.onpopstate = function(event) {
+					markdownBuilder.buildPage(event.state.content,event.state.title, markdownBuilder.config.content.target.content_selector, markdownBuilder.config.content.target.title_selector);
+				};
+			}
 
 			var content_selector = "div.container>div.content";
 			var title_selector = "span.title";
@@ -72,9 +81,9 @@
 				doc.save((build_result?build_result.title:'untitled')+'.pdf');
 			}).css('cursor','pointer');
 			
-			var markdown_source = MarkdownDisplay.BuilderUtil.getURLParameter('md');
-			if (markdown_source) {
-				var markdownBuilder = new MarkdownDisplay.Builder({
+			//var markdown_source = MarkdownDisplay.BuilderUtil.getURLParameter('md');
+			//if (markdown_source) {
+				markdownBuilder = new MarkdownDisplay.Builder({
 					content : {
 						source : {
 							url_parameter : 'md'
@@ -115,9 +124,9 @@
 										if (event.which == 1) {
 											event.preventDefault();
 											var result = markdownBuilder.build({content:{source:{text:null, url_parameter:null, url:real_url}}});
-											if (history.pushState) {
+											if (useHistory) {
 												try {
-													history.pushState(result, result.title, location.protocol + '//' + location.host + location.pathname+"?md="+real_url);
+													window.history.pushState(result, result.title, location.protocol + '//' + location.host + location.pathname+"?md="+real_url);
 												} catch (ex) {
 													jQuery.growl.warning({title: 'No history', message: ex});
 												}
@@ -137,7 +146,7 @@
 				jQuery(all_selector).css('visibility','hidden').block(blockUI_config);
 
 				build_result = markdownBuilder.build();
-			}
+			//}
 		});
 	//]]>
 	</script>
