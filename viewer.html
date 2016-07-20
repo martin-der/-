@@ -75,7 +75,7 @@
 
 			jQuery('#download').click(function () {
 				var doc = new jsPDF();
-				doc.fromHTML(jQuery('body>div').html(), 15, 15, {
+				doc.fromHTML(jQuery('div#exported-content').html(), 15, 15, {
 					'width': 170,'elementHandlers': specialElementHandlers
 				});
 				doc.save((build_result?build_result.title:'untitled')+'.pdf');
