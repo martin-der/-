@@ -157,7 +157,7 @@
 							});
 						},
 						fail : function(url, error) {
-							jQuery.growl.error({ title: "Load failed", message: "Loading '"+url+"' : "+error });
+							jQuery.growl.error({ title: "Load failed", fixed:true, message: "Loading '"+url+"' : "+error });
 						}
 					}
 				});
