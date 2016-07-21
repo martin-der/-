@@ -30,7 +30,13 @@ Theme.Configurator = Theme.Configurator || function(a) {
 	return {
 		config : config,
 		setup : function() {
-			
+
+			var head = jQuery("html>head");
+
+			head.append(jQuery("<link>",{ id:'theme_reset_css', rel:'stylesheet'}));
+			head.append(jQuery("<link>",{ id:'theme_main_css', rel:'stylesheet'}));
+			head.append(jQuery("<link>",{ id:'theme_mandatory_css', rel:'stylesheet'}));
+
 			var themeSelects = jQuery(config.selects_selector);
 
 			var i, j;
@@ -49,7 +55,7 @@ Theme.Configurator = Theme.Configurator || function(a) {
 			var this_configurator = this;
 
 			themeSelects.on('change', function (e) {
-				var option = $('option:selected', this);
+				var option = jQuery('option:selected', this);
 				var theme = this.value;
 				
 				if (jQuery.blockUI) {
