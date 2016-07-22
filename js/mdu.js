@@ -1,12 +1,28 @@
 
-var MDU = MDU || {};
-MDU.config = {};
+var MDU = {} || MDU;
+
+MDU.PostProcessCallback = {
+	done : null,
+	fail : null
+};
+
+
+
+MDU.string = {};
+
+MDU.string.format = function(format) {
+	var args = Array.prototype.slice.call(arguments, 1);
+	return format.replace(/{(\d+)}/g, function(match, number) { 
+		return typeof args[number] != 'undefined' ? args[number] : match;
+	});
+};
+
 
 MDU.config.wildValue = {
 	text          : undefined,
 	url_parameter : undefined
 };
-	
+
 /**
  * @Params 
  *   @Param { text : string }
@@ -15,7 +31,7 @@ MDU.config.wildValue = {
  * @Params none
  */
 MDU.WildString = function(a){
-	
+        
 	var makeState = function(a) {
 		var a_type = typeof(a);
 
@@ -31,7 +47,7 @@ MDU.WildString = function(a){
 	}
 
 	var state = makeState(a);
-	
+
 	return {
 		state : state,
 		toString : function() {
@@ -48,10 +64,10 @@ MDU.WildString = function(a){
 		},
 		get : function() {
 			if (this.state.text !== undefined) {
-				return this.state.text;
+					return this.state.text;
 			}
 			if (this.state.url_parameter !== undefined) {
-				return MDU.getURLParameter(this.state.url_parameter);
+					return MDU.getURLParameter(this.state.url_parameter);
 			}
 			return undefined;
 		}
@@ -75,4 +91,5 @@ MDU.getLocation = function(url) {
 MDU.getURLParameter = function (key) {
 	return decodeURIComponent((new RegExp('[?|&]' + key + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [null, ''])[1].replace(/\+/g, '%20')) || null;
 };
- 
+
+
