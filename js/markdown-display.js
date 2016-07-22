@@ -35,7 +35,8 @@ MarkdownDisplay.config.builder = {
 	pre_process : {
 		build : null
 	},
-	post_process : jQuery.extend(true, {}, MarkdownDisplay.Config.PostProcessCallback)
+	post_process : jQuery.extend(true, {}, MarkdownDisplay.Config.PostProcessCallback),
+	useHistory : true
 };
 
 MarkdownDisplay.Loader_onLoadedFromFarAway = null;
@@ -50,7 +51,7 @@ MarkdownDisplay.Loader = {};
  *     @param config
  */
 MarkdownDisplay.Loader.AbstractLoader = function(a, b) {
-		var config = null;
+	var config;
 
 	var a_type = typeof(a);
 	
@@ -186,24 +187,25 @@ MarkdownDisplay.BuilderUtil = {
  */
 MarkdownDisplay.Builder = function(a) {
 
-	var config = null;
+	var config;
 
 	var a_type = typeof(a);
 	
 	if ("function" == a_type) {
-		config = jQuery.extend(true, {}, MarkdownDisplay.config.loader);
+		config = jQuery.extend(true, {}, MarkdownDisplay.config.builder);
 		config.post_process.done = a;
 		var b_type = typeof(b);
 		if ( b_type != "undefined" && b_type != "function") {
-			throw "Second parameter, 'fail post_process' mush be a function";
+			throw "Second parameter, 'fail post_process' must be a function";
 		}
 		config.post_process.done = b;
 	} else if ("undefined" == a_type){
-		config = jQuery.extend(true, {}, MarkdownDisplay.config.loader);
+		config = jQuery.extend(true, {}, MarkdownDisplay.config.builder);
 	} else {
-		config = jQuery.extend(true, {}, MarkdownDisplay.config.loader, a);
+		config = jQuery.extend(true, {}, MarkdownDisplay.config.builder, a);
 	}
-	
+
+
 	var builder = { 
 		config : config,
 		result : {},
@@ -242,9 +244,11 @@ MarkdownDisplay.Builder = function(a) {
 							if (event.which == 1) {
 								event.preventDefault();
 								var result = builder.build({content:{source:{text:null, url_parameter:null, url:real_url}}});
-								if (useHistory) {
+								if (config.useHistory) {
 									try {
+										builder.pre_process.build(url);
 										window.history.pushState(result, result.title, location.protocol + '//' + location.host + location.pathname+"?md="+real_url);
+										builder.post_process.done(url,content);
 									} catch (ex) {
 										jQuery.growl.warning({title: 'No history', message: ex});
 									}
@@ -298,7 +302,7 @@ MarkdownDisplay.Builder = function(a) {
 			if (!url) {
 				url = MarkdownDisplay.BuilderUtil.getURLParameter(this.config.content.source.url_parameter);
 				if (url == null) {
-					throw "Url parameter '"+this.config.content.source.url_parameter+"' not found";
+					throw "No URL parameter '"+this.config.content.source.url_parameter+"' found";
 				}
 			}
 
@@ -315,7 +319,13 @@ MarkdownDisplay.Builder = function(a) {
 		},
 		Util : MarkdownDisplay.BuilderUtil
 	};
-	
+
+	if (config.useHistory) { 
+		window.onpopstate = function(event) { 
+			builder.buildPage(event.state.content,event.state.title, builder.config.content.target.content_selector, builder.config.content.target.title_selector); 
+		}; 
+	}
+
 	if ( !config.content.source.text && (config.content.source.url || config.content.source.url_parameter) ) {
 		if (!config.content.from_url_fetcher) {
 			var builder_config = config;

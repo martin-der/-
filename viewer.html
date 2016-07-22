@@ -74,12 +74,6 @@
 				jQuery.growl.warning({title: "Cannot set theme", message: ex});
 			}
 	
-			if (useHistory) {
-				window.onpopstate = function(event) {
-					markdownBuilder.buildPage(event.state.content,event.state.title, markdownBuilder.config.content.target.content_selector, markdownBuilder.config.content.target.title_selector);
-				};
-			}
-
 			var content_selector = "div.container>div.content";
 			var title_selector = "span.title";
 			var all_selector = content_selector+","+title_selector;
