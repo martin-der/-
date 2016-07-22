@@ -1,5 +1,62 @@
 
-var MDU = {};
+var MDU = MDU || {};
+MDU.config = {};
+
+MDU.config.wildValue = {
+	text          : undefined,
+	url_parameter : undefined
+};
+	
+/**
+ * @Params 
+ *   @Param { text : string }
+ * @Params 
+ *   @Param { url_parameter : string }
+ * @Params none
+ */
+MDU.WildString = function(a){
+	
+	var makeState = function(a) {
+		var a_type = typeof(a);
+
+		if ( a_type === 'object' ) {
+			return jQuery.extend(true, {}, a);
+		} else if ( a_type === 'undefined' ) {
+			return {};
+		} else if ( a_type === 'string' ) {
+			return { text : a };
+		} else {
+			throw "Cannot use parameter '"+a_type+"'";
+		}
+	}
+
+	var state = makeState(a);
+	
+	return {
+		state : state,
+		toString : function() {
+			return this.state;
+		},
+		setText : function(text) {
+			this.state = { text : text };
+		},
+		setUrlParameter : function(parameter) {
+			this.state = { url_parameter : parameter };
+		},
+		set : function(a) {
+			this.state = makeState(a);
+		},
+		get : function() {
+			if (this.state.text !== undefined) {
+				return this.state.text;
+			}
+			if (this.state.url_parameter !== undefined) {
+				return MDU.getURLParameter(this.state.url_parameter);
+			}
+			return undefined;
+		}
+	};
+};
 
 
 MDU.REGEX_isAbsoluteURL = new RegExp('^(?:[a-z]+:)?//', 'i');
