@@ -6,7 +6,13 @@ Theme.config = {};
 Theme.config.configurator = {
 	themes : [],
 	selects_selector : "select#theme",
-	resolve_location : 'theme/{0}' //see http://stackoverflow.com/a/4673436
+	location_system : 'theme',
+	location : 'theme/{0}',
+	extra : {
+		themes : [],
+		location : null
+	},
+	post_process : MDU.PostProcessCallback
 };
 
 Theme.Reference = function(name, label, url) {
@@ -50,6 +56,13 @@ Theme.Configurator = Theme.Configurator || function(a) {
 						text : theme.label
 					}));
 				}
+				for ( i=0 ; i<this.config.extra.themes.length ; i++ ) {
+					var theme = this.config.extra.themes[i];
+					themeSelect.append(jQuery("<option>", {
+						value : theme.name,
+						text : theme.label
+					}));
+				}
 			}
 		
 			var this_configurator = this;
@@ -66,6 +79,9 @@ Theme.Configurator = Theme.Configurator || function(a) {
 					if (Cookies) {
 						Cookies.set('theme', theme);
 					}
+				} catch (ex) {
+					if (this_configurator.post_process.fail)
+						this_configurator.post_process.fail(theme, ex);
 				} finally {
 					if (jQuery.blockUI) {
 						jQuery.unblockUI();
@@ -84,9 +100,7 @@ Theme.Configurator = Theme.Configurator || function(a) {
 			}
 
 			if ( name ) {
-				//if (options.setThemeClientSide) {
-					this.setTheme ( name );
-				//}
+				this.setTheme ( name );
 				themeSelects.children("option[value='"+name+"']").prop('selected', true)
 			}
 
@@ -95,6 +109,8 @@ Theme.Configurator = Theme.Configurator || function(a) {
 			var urlPrefix = '';
 			
 			var i;
+			
+			var isExtra = false;
 			
 			var theme = null;
 			for ( i=0 ; i<this.config.themes.length ; i++ ) {
@@ -105,20 +121,35 @@ Theme.Configurator = Theme.Configurator || function(a) {
 				}
 			}
 			if (theme === null) {
+				for ( i=0 ; i<this.config.extra.themes.length ; i++ ) {
+					var theme_i = this.config.extra.themes[i];
+					if (theme_i.name === name) {
+						theme = theme_i;
+						isExtra = true;
+						break;
+					}
+				}
+			}
+			
+			if (theme === null) {
 				throw "No such theme '"+name+"'";
 			}
 			
-			var resetCssLink = "<link id='theme_reset_css' rel='stylesheet' href='"+urlPrefix+"theme/reset.css' type='text/css'>";
+			var resetCssLink = "<link id='theme_reset_css' rel='stylesheet' href='"+this.config.location_system+"/reset.css' type='text/css'>";
 			
 			var mainUrl;
 			if (!theme.url) {
-				mainUrl = urlPrefix+"theme/"+theme.name+"/main.css";
+				if (isExtra) {
+					mainUrl = MDU.string.format(this.config.extra.location, theme.name)+"/main.css";
+				} else {
+					mainUrl = MDU.string.format(this.config.location, theme.name)+"/main.css";
+				}
 			} else {
-				mainUrl = "...";
+				mainUrl = MDU.string.format(this.config.location, theme.name);
 			}
 			var mainCssLink = "<link id='theme_main_css' rel='stylesheet' href='"+mainUrl+"' type='text/css'>";
 
-			var mandatoryCssLink = "<link id='theme_mandatory_css' rel='stylesheet' href='"+urlPrefix+"theme/mandatory.css' type='text/css'>";
+			var mandatoryCssLink = "<link id='theme_mandatory_css' rel='stylesheet' href='"+this.config.location_system+"/mandatory.css' type='text/css'>";
 
 			jQuery("html>head>link[id='theme_reset_css'],html>head>link[id='theme_main_css'],html>head>link[id='theme_mandatory_css']").remove();
 			jQuery("html>head").append(resetCssLink + mainCssLink + mandatoryCssLink);

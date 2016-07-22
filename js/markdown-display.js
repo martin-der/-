@@ -3,20 +3,18 @@
 var MarkdownDisplay = MarkdownDisplay || {};
 
 function getLocation(url) {
-	// location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '')
 	var a = document.createElement("a");
     a.href = url;
     var l = { protocol : a.protocol, hostname : a.hostname, port : a.port, pathname : a.pathname };
 	return l;
 }	
 
+MarkdownDisplay.Config = {
+	PostProcessCallback : MDU.PostProcessCallback
+};
+
 MarkdownDisplay.config = {};
 
-MarkdownDisplay.Config = {};
-MarkdownDisplay.Config.PostProcessCallback = {
-	done : null,
-	fail : null
-};
 MarkdownDisplay.config.loader = {
 	callback : jQuery.extend(true, {}, MarkdownDisplay.Config.PostProcessCallback)
 };
@@ -33,6 +31,9 @@ MarkdownDisplay.config.builder = {
 	target : {
 		title_selector : null,
 		content_selector : null
+	},
+	pre_process : {
+		build : null
 	},
 	post_process : jQuery.extend(true, {}, MarkdownDisplay.Config.PostProcessCallback)
 };
@@ -206,6 +207,66 @@ MarkdownDisplay.Builder = function(a) {
 	var builder = { 
 		config : config,
 		result : {},
+		pre_process : {
+			build : function(url) {
+				if (builder.config.pre_process.build) {
+					return builder.config.pre_process.build(url);
+				}
+				return true;
+			}
+		},
+		post_process : {
+			done : function(url,content) {
+				jQuery(config.content.target.content_selector).find("a[href]").each(function(){
+					var this_a = jQuery(this);
+					var href = this_a.attr('href');
+					var isAbsolute = MDU.isAbsoluteURL(href);
+
+					var real_url;
+					if (isAbsolute) {
+						real_url = href;
+					} else {
+						if (href.startsWith('/')) {
+							var doc_location = MDU.getLocation(url);
+							real_url = doc_location.protocol + '//' + doc_location.host + href;
+						} else {
+							var base_url = url.substring(0, url.lastIndexOf("/"));
+							real_url = base_url+'/'+href;
+						}
+					}
+
+					if (MarkdownDisplay.BuilderUtil.hasMDSuffix(href)) {
+						this_a.attr("href","viewer+"+real_url);
+						this_a.addClass('md-viewer');
+						this_a.on('click', function(event) {
+							if (event.which == 1) {
+								event.preventDefault();
+								var result = builder.build({content:{source:{text:null, url_parameter:null, url:real_url}}});
+								if (useHistory) {
+									try {
+										window.history.pushState(result, result.title, location.protocol + '//' + location.host + location.pathname+"?md="+real_url);
+									} catch (ex) {
+										jQuery.growl.warning({title: 'No history', message: ex});
+									}
+								}
+							}
+						});
+					} else {
+						this_a.attr("href",real_url);
+					}
+				});
+				if (builder.config.post_process.done) {
+					builder.config.post_process.done(url,content);
+				}
+			},
+			fail : function(url,error) {
+				if (builder.config.post_process.fail) {
+					builder.config.post_process.fail(url,error);
+				} else {
+					throw "unable to load '"+url+"' : "+error;
+				}
+			}
+		},
 		buildPage : function (mdContent, title, targetContent, targetTitle) {
 			var converter = new showdown.Converter();
 			var htmlContent = converter.makeHtml(mdContent);
@@ -240,6 +301,8 @@ MarkdownDisplay.Builder = function(a) {
 					throw "Url parameter '"+this.config.content.source.url_parameter+"' not found";
 				}
 			}
+
+			builder.pre_process.build(url);
 			
 			if ( !this.config.content.from_url_fetcher ) {
 				throw "When no text is given, 'config.content.from_url_fetcher' must be provided";
@@ -263,16 +326,10 @@ MarkdownDisplay.Builder = function(a) {
 					done : function (url, content){
 						var title = builder.Util.getTitleFromMarkdownURL(url);
 						builder.buildPage(content,title, builder_config.content.target.content_selector, builder_config.content.target.title_selector);
-						if (builder_config.post_process.done) {
-							builder_config.post_process.done(url,content);
-						}
+						builder.post_process.done(url,content);
 					},
 					fail : function (url, error) {
-						if (builder_config.post_process.fail) {
-							builder_config.post_process.fail(url,error);
-						} else {
-							throw "unable to load '"+url+"' : "+error;
-						}
+						builder.post_process.fail(url, error);
 					}
 				}
 			});

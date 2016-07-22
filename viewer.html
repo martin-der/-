@@ -42,6 +42,11 @@
 		var useHistory = window.onpopstate && window.history.pushState;
 
 		var themeConfigurator = new Theme.Configurator({
+			post_process : {
+				fail : function(name, error) {
+					jQuery.growl.warning({title: "Cannot set theme", message: error});
+				}
+			},
 			themes : [
 				new Theme.Reference('country','Country'),
 				new Theme.Reference('deepocean','Deep Ocean'),
@@ -51,8 +56,14 @@
 				new Theme.Reference('stoneage','Stone Age'),
 				new Theme.Reference('subtle','Subtle'),
 				new Theme.Reference('terminal','Terminal')
-			]
-		});
+			],
+			extra : {
+				location : 'theme/generali/{0}',
+				themes : [
+					new Theme.Reference('pdofsi','PDO-FSI')
+				]
+			}
+		});	
 		
 		jQuery(function() {    
 			var markdownBuilder = null;
@@ -60,7 +71,7 @@
 			try {
 				themeConfigurator.setup();
 			} catch (ex) {
-				jQuery.growl.warning({title: "Cannot set theme", message: ex})
+				jQuery.growl.warning({title: "Cannot set theme", message: ex});
 			}
 	
 			if (useHistory) {
@@ -99,72 +110,37 @@
 				doc.save((build_result?build_result.title:'untitled')+'.pdf');
 			}).css('cursor','pointer');
 			
-			//var markdown_source = MarkdownDisplay.BuilderUtil.getURLParameter('md');
-			//if (markdown_source) {
-				markdownBuilder = new MarkdownDisplay.Builder({
-					content : {
-						source : {
-							url_parameter : 'md'
-						},
-						target : {
-							title_selector : title_selector,
-							content_selector : content_selector
-						}
+			markdownBuilder = new MarkdownDisplay.Builder({
+				content : {
+					source : {
+						url_parameter : 'md'
 					},
-					post_process : {
-						done : function(url,content) {
-							jQuery(content_selector).find('pre>code').each(function(i, block) {
-								hljs.highlightBlock(block);
-							});
-							jQuery(all_selector).css('visibility','visible').unblock(blockUI_config);
-							jQuery(content_selector).find("a[href]").each(function(){
-								var this_a = jQuery(this);
-								var href = this_a.attr('href');
-								var isAbsolute = MDU.isAbsoluteURL(href);
-
-								var real_url;
-								if (isAbsolute) {
-									real_url = href;
-								} else {
-									if (href.startsWith('/')) {
-										var doc_location = MDU.getLocation(url);
-										real_url = doc_location.protocol + '//' + doc_location.host + href;
-									} else {
-										var base_url = url.substring(0, url.lastIndexOf("/"));
-										real_url = base_url+'/'+href;
-									}
-								}
-
-								if (MarkdownDisplay.BuilderUtil.hasMDSuffix(href)) {
-									this_a.attr("href","viewer+"+real_url);
-									this_a.addClass('md-viewer');
-									this_a.on('click', function(event) {
-										if (event.which == 1) {
-											event.preventDefault();
-											var result = markdownBuilder.build({content:{source:{text:null, url_parameter:null, url:real_url}}});
-											if (useHistory) {
-												try {
-													window.history.pushState(result, result.title, location.protocol + '//' + location.host + location.pathname+"?md="+real_url);
-												} catch (ex) {
-													jQuery.growl.warning({title: 'No history', message: ex});
-												}
-											}
-										}
-									});
-								} else {
-									this_a.attr("href",real_url);
-								}
-							});
-						},
-						fail : function(url, error) {
-							jQuery.growl.error({ title: "Load failed", fixed:true, message: "Loading '"+url+"' : "+error });
-						}
+					target : {
+						title_selector : title_selector,
+						content_selector : content_selector
 					}
-				});
-				jQuery(all_selector).css('visibility','hidden').block(blockUI_config);
+				},
+				pre_process : {
+					build : function(url) {
+						jQuery(all_selector).css('visibility','hidden');
+						return true;
+					}
+				},
+				post_process : {
+					done : function(url,content) {
+						jQuery(content_selector).find('pre>code').each(function(i, block) {
+							hljs.highlightBlock(block);
+						});
+						jQuery(all_selector).block(blockUI_config);
+						jQuery(all_selector).css('visibility','visible').unblock(blockUI_config);
+					},
+					fail : function(url, error) {
+						jQuery.growl.error({ title: "Load failed", fixed:true, message: "Loading '"+url+"' : "+error });
+					}
+				}
+			});
 
-				build_result = markdownBuilder.build();
-			//}
+			build_result = markdownBuilder.build();
 		});
 	//]]>
 	</script>
