@@ -7,6 +7,7 @@ MDU.PostProcessCallback = {
 };
 
 
+MDU.config = {};
 
 MDU.string = {};
 
