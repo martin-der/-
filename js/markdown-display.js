@@ -182,6 +182,30 @@ MarkdownDisplay.BuilderUtil = {
 	}
 };
 
+MarkdownDisplay.converter = {
+	backend : null,
+	convert : null,
+	initBackend: function(instance) {
+		var name = 'pagedown';
+		if (name === 'showdown') {
+			instance.backend = new showdown.Converter();
+			instance.convert = function(text) {
+				 return instance.backend.makeHtml(text);
+			};
+		}
+		// default : pagedown
+		instance.backend = new Markdown.Converter();
+		Markdown.Extra.init(instance.backend);
+		instance.convert = function(text) {
+			return instance.backend.makeHtml(text);
+		};
+	},
+	toHtml : function(text) {
+		if (!this.backend) this.initBackend(this);
+		return this.convert(text);
+	}
+};
+
 /**
  * @params ( config )
  */
@@ -204,6 +228,12 @@ MarkdownDisplay.Builder = function(a) {
 	} else {
 		config = jQuery.extend(true, {}, MarkdownDisplay.config.builder, a);
 	}
+
+	
+
+	if (!MarkdownDisplay.converter) {
+	}
+
 
 
 	var builder = { 
@@ -272,8 +302,8 @@ MarkdownDisplay.Builder = function(a) {
 			}
 		},
 		buildPage : function (mdContent, title, targetContent, targetTitle) {
-			var converter = new showdown.Converter();
-			var htmlContent = converter.makeHtml(mdContent);
+
+			var htmlContent = MarkdownDisplay.converter.toHtml(mdContent);
 
 			this.result.content = mdContent;
 			this.result.title = title;

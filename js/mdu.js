@@ -17,7 +17,7 @@ MDU.string.format = function(format) {
 		return typeof args[number] != 'undefined' ? args[number] : match;
 	});
 };
-
+ 
 
 MDU.config.wildValue = {
 	text          : undefined,
