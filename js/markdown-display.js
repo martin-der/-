@@ -2,6 +2,19 @@
 
 var MarkdownDisplay = MarkdownDisplay || {};
 
+if (typeof jQuery != 'undefined') {
+	(function( $ ) {
+		$.fn.flowchart = function( options ) {
+			return this.each(function() {
+				var $this = $(this);
+				var diagram = flowchart.parse($this.text());
+				$this.html('');
+				diagram.drawSVG(this, options);
+			});
+		};
+	})( jQuery );
+}
+
 function getLocation(url) {
 	var a = document.createElement("a");
     a.href = url;
@@ -229,13 +242,6 @@ MarkdownDisplay.Builder = function(a) {
 		config = jQuery.extend(true, {}, MarkdownDisplay.config.builder, a);
 	}
 
-	
-
-	if (!MarkdownDisplay.converter) {
-	}
-
-
-
 	var builder = { 
 		config : config,
 		result : {},
@@ -249,6 +255,7 @@ MarkdownDisplay.Builder = function(a) {
 		},
 		post_process : {
 			done : function(url,content) {
+				// Sanitize href
 				jQuery(config.content.target.content_selector).find("a[href]").each(function(){
 					var this_a = jQuery(this);
 					var href = this_a.attr('href');
@@ -289,6 +296,28 @@ MarkdownDisplay.Builder = function(a) {
 						this_a.attr("href",real_url);
 					}
 				});
+				// build graphs
+				jQuery(config.content.target.content_selector).find("pre>code.sequence,pre>code.flow").each(function() {
+					var jqCode = jQuery(this);
+					var divGraph = jqCode.parent().after("<div>").next();
+					try {
+						if (jqCode.hasClass('sequence')) {
+							divGraph.html(jqCode.html());
+							jQuery(divGraph).sequenceDiagram({theme: 'hand'});
+						} else /* flow */  {
+							//jQuery(divGraph).attr('id','tmpGraphid');
+							//var chart = flowchart.parse(jqCode.html());
+							//chart.drawSVG(divGraph);
+							divGraph.html(jqCode.html());
+							divGraph.flowchart()
+						}
+						jqCode.remove();
+					} catch (ex) {
+						if (console &&  console.error) console.error (ex);
+						divGraph.remove();
+					}
+				});
+
 				if (builder.config.post_process.done) {
 					builder.config.post_process.done(url,content);
 				}
