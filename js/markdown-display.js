@@ -287,7 +287,7 @@ MarkdownDisplay.Builder = function(a) {
 										window.history.pushState(result, result.title, location.protocol + '//' + location.host + location.pathname+"?md="+real_url);
 										builder.post_process.done(url,content);
 									} catch (ex) {
-										jQuery.growl.warning({title: 'No history', message: ex});
+										if (console &&  console.error) console.error ('No hsitory', ex);
 									}
 								}
 							}
