@@ -300,6 +300,7 @@ MarkdownDisplay.Builder = function(a) {
 				jQuery(config.content.target.content_selector).find("pre>code.sequence,pre>code.flow").each(function() {
 					var jqCode = jQuery(this);
 					var divGraph = jqCode.parent().after("<div>").next();
+					divGraph.addClass('sub-container');
 					try {
 						if (jqCode.hasClass('sequence')) {
 							divGraph.html(jqCode.html());
