@@ -13,6 +13,9 @@ MDU.string = {};
 
 MDU.string.format = function(format) {
 	var args = Array.prototype.slice.call(arguments, 1);
+	return MDU.string.formatv(format, args);
+};
+MDU.string.formatv = function(format, args) {
 	return format.replace(/{(\d+)}/g, function(match, number) { 
 		return typeof args[number] != 'undefined' ? args[number] : match;
 	});
