@@ -5,6 +5,7 @@ Theme.config = {};
 
 Theme.config.configurator = {
 	themes : [],
+	default_theme : null,
 	selects_selector : "select#theme",
 	location_system : 'theme',
 	location : 'theme/{0}',
@@ -98,6 +99,10 @@ Theme.Configurator = Theme.Configurator || function(a) {
 			if (!name && Cookies) {
 				name = Cookies.get('theme');
 			}
+			
+			if (!name && this.config.default_theme) {
+				name = this.config.default_theme;
+			}
 
 			if ( name ) {
 				this.setTheme ( name );
@@ -106,8 +111,6 @@ Theme.Configurator = Theme.Configurator || function(a) {
 
 		},
 		setTheme : function ( name ) {
-			var urlPrefix = '';
-			
 			var i;
 			
 			var isExtra = false;
@@ -151,6 +154,10 @@ Theme.Configurator = Theme.Configurator || function(a) {
 
 			var mandatoryCssLink = "<link id='theme_mandatory_css' rel='stylesheet' href='"+this.config.location_system+"/mandatory.css' type='text/css'>";
 
+			//jQuery.get(myStylesLocation, function(css)
+			//{
+			//	jQuery('<style type="text/css"></style>').html(css).appendTo("head");
+			//});
 			jQuery("html>head>link[id='theme_reset_css'],html>head>link[id='theme_main_css'],html>head>link[id='theme_mandatory_css']").remove();
 			jQuery("html>head").append(resetCssLink + mainCssLink + mandatoryCssLink);
 		}
