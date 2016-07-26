@@ -52,12 +52,6 @@
 	<script  type="text/javascript">
 	//<![CDATA[
 
-		jQuery( document ).ajaxError(function( event, jqxhr, settings, thrownError ) {
-			if ( settings.url == "ajax/missing.html" ) {
-				jQuery( "div.log" ).text( "Triggered ajaxError handler." );
-			}
-		});
-	
 		var useHistory = window.onpopstate && window.history.pushState;
 
 		var themeConfigurator = new Theme.Configurator({
