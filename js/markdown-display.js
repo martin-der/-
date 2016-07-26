@@ -15,15 +15,12 @@ if (typeof jQuery != 'undefined') {
 	})( jQuery );
 }
 
-function getLocation(url) {
-	var a = document.createElement("a");
-    a.href = url;
-    var l = { protocol : a.protocol, hostname : a.hostname, port : a.port, pathname : a.pathname };
-	return l;
-}	
-
 MarkdownDisplay.Config = {
-	PostProcessCallback : MDU.PostProcessCallback
+	PostProcessCallback : MDU.PostProcessCallback,
+	nameToURLConverter : {
+		name_match : null,
+		convert : null
+	}
 };
 
 MarkdownDisplay.config = {};
@@ -38,6 +35,7 @@ MarkdownDisplay.config.builder = {
 			url : null,
 			url_parameter : null
 		},
+		nameToURLConverters : [],
 		title : null,
 		from_url_fetcher : null
 	},
@@ -110,6 +108,9 @@ MarkdownDisplay.Loader.ViaProxyLoader = function(a, b) {
 			var script = jQuery(script_selector);
 			MarkdownDisplay.Loader_instance = this;
 			try {
+				//jQuery.get('http://www.whateverorigin.org/get?url=' + encodeURIComponent(url) + '&callback=MarkdownDisplay.Loader_onLoadedFromFarAway', function(data){
+				//	alert(data.contents);
+				//});
 				script.attr('src', 'http://www.whateverorigin.org/get?url='+encodeURIComponent(url)+'&callback=MarkdownDisplay.Loader_onLoadedFromFarAway');
 			} catch(ex) {
 				this.handleFail (url,ex);
@@ -157,6 +158,50 @@ MarkdownDisplay.Loader.ViaAjaxLoader = function(a, b) {
 	
 	return this_loader;
 }
+
+
+MarkdownDisplay.NameToURLConverter =  function(name_match, output){
+	
+	if ( typeof name_match === 'string' ) {
+		name_match = new Regex(name_match);
+	} else if ( ! (name_match instanceof RegExp) ) {
+		throw "Parameter 'name_match' must be a regex";
+	}
+	
+	var typeof_output = typeof output;
+	var output_choice = { convert : null, format : null };
+	if ( typeof_output === 'function' ) {
+		output_choice.convert = output;
+	} else if ( typeof_output === 'string' ) {
+		output_choice.format = output;
+	} else {
+		throw "Parameter 'output' must be a function or a string";
+	}
+	
+	return {
+		name_match : name_match,
+		output : output_choice,
+		getValues (name) {
+			var match = this.name_match.exec(name);
+			if (!match) return null;
+			match.shift();
+			return match;
+		},
+		convert : function(name) {
+			var values = this.getValues(name);
+			if (this.output.format) {
+				return MDU.string.formatv(this.output.format, values);
+			} else {
+				return this.output.convert(name, values);
+			}
+		}
+	}
+};
+
+MarkdownDisplay.config.NameToURLConverters = {
+	GITHUB : new MarkdownDisplay.NameToURLConverter ( /^github\/([^\/]+)\/([^\/]+)\/(.+)$/ , 'https://raw.githubusercontent.com/{0}/{1}/master/{2}')
+};
+
 
 
 MarkdownDisplay.BuilderUtil = {
@@ -297,22 +342,31 @@ MarkdownDisplay.Builder = function(a) {
 					}
 				});
 				// build graphs
-				jQuery(config.content.target.content_selector).find("pre>code.sequence,pre>code.flow").each(function() {
+				jQuery(config.content.target.content_selector).find("pre>code,pre>code").each(function() {
 					var jqCode = jQuery(this);
 					var divGraph = jqCode.parent().after("<div>").next();
-					divGraph.addClass('sub-container');
+					var codeToGraph = true;
 					try {
 						if (jqCode.hasClass('sequence')) {
 							divGraph.html(jqCode.html());
 							jQuery(divGraph).sequenceDiagram({theme: 'hand'});
-						} else /* flow */  {
+						} else if (jqCode.hasClass('flow')) {
 							//jQuery(divGraph).attr('id','tmpGraphid');
 							//var chart = flowchart.parse(jqCode.html());
 							//chart.drawSVG(divGraph);
 							divGraph.html(jqCode.html());
 							divGraph.flowchart()
+						} else {
+							codeToGraph = false;
 						}
-						jqCode.remove();
+						if (codeToGraph) {
+							jqCode.remove();
+							divGraph.addClass('sub-container');
+						} else {
+							jqCode.parent().addClass('sub-container');
+							// FIXME : adding divGraph and remove it in some cases is not efficient
+							divGraph.remove();
+						}
 					} catch (ex) {
 						if (console &&  console.error) console.error (ex);
 						divGraph.remove();
@@ -344,6 +398,8 @@ MarkdownDisplay.Builder = function(a) {
 			if (title) {
 				document.title = title;
 				jQuery(targetTitle).html(title);
+				jQuery(targetTitle).attr(title);
+				
 			}
 		},
 		build : function(config) {
@@ -362,7 +418,25 @@ MarkdownDisplay.Builder = function(a) {
 			if (!url) {
 				url = MarkdownDisplay.BuilderUtil.getURLParameter(this.config.content.source.url_parameter);
 				if (url == null) {
+					var parameters = location.search;
+					if ( parameters && parameters!='' ) {
+						parameters = /^\?([^&]*)$/.exec(parameters);
+						if (parameters) url = decodeURIComponent(parameters[1]);
+					}
+				}
+				if (url == null) {
 					throw "No URL parameter '"+this.config.content.source.url_parameter+"' found";
+				}
+			}
+			
+			if (this.config.content.nameToURLConverters) {
+				var i;
+				for ( i=0 ;  i<this.config.content.nameToURLConverters.length ; i++ ) {
+					var converter = this.config.content.nameToURLConverters[i];
+					if (converter.name_match.exec(url)) {
+						url = converter.convert(url);
+						break;
+					}
 				}
 			}
 
