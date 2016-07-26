@@ -125,7 +125,13 @@
 					target : {
 						title_selector : title_selector,
 						content_selector : content_selector
-					}
+					},
+					nameToURLConverters : [
+						   MarkdownDisplay.config.NameToURLConverters.GITHUB,
+						   new MarkdownDisplay.NameToURLConverter ( /^generali\/~([^\/]+)\/([^\/]+)\/(.+)$/ , 'http://git.groupe.generali.fr/users/{0}/repos/{1}/browse/{2}?at=master&raw'),
+						   new MarkdownDisplay.NameToURLConverter ( /^generali\/([^\/]+)\/(.+)$/ , 'http://git.groupe.generali.fr/users/b010cdx/repos/{0}/browse/{1}?at=master&raw'),
+						   new MarkdownDisplay.NameToURLConverter ( /^livrable\/(.+)$/ , 'http://git.groupe.generali.fr/users/b010cdx/repos/document/browse/{0}?at=master&raw' )
+					],
 				},
 				pre_process : {
 					build : function(url) {
