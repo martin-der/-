@@ -56,8 +56,19 @@
 
 		var themeConfigurator = new Theme.Configurator({
 			post_process : {
-				fail : function(name, error) {
-					jQuery.growl.warning({title: "Cannot set theme", message: error});
+				done : function(theme) {
+					jQuery.growl.notice({title: "Theme changed", message: "New theme is '"+theme.label+"'"});
+				},
+				fail : function(theme, failures) {
+					var message;
+					if (failures.length>0) {
+						message = "";
+						var i;
+						for ( i=0 ; i<failures.length ; i++ )
+							message = message + "<li>"+failures[i].url+":"+failures[i].error+"</li>";
+						message = "<ul>"+message+"</ul>";
+					}
+					jQuery.growl.warning({title: "Cannot set theme '"+theme.label+"' ("+theme.name+")", message: message});
 				}
 			},
 			default_theme : 'pdofsi',
@@ -69,7 +80,8 @@
 				new Theme.Reference('google','Google'),
 				new Theme.Reference('stoneage','Stone Age'),
 				new Theme.Reference('subtle','Subtle'),
-				new Theme.Reference('terminal','Terminal')
+				new Theme.Reference('terminal','Terminal'),
+				new Theme.Reference('fuckit','Coco')
 			],
 			extra : {
 				location : 'theme/generali/{0}',
@@ -191,7 +203,6 @@
 				<tr>
 					<td>
 						<header class="main-container" style="text-align: center">
-
 							<div id="tools" class="reverse-boo" style="position:absolute; top:1em; right:1em;">
 								<table>
 									<tr>
