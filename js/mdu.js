@@ -20,6 +20,13 @@ MDU.string.formatv = function(format, args) {
 		return typeof args[number] != 'undefined' ? args[number] : match;
 	});
 };
+
+MDU.string.dirname = function (path) {
+	return path.match( /.*\// );
+}
+MDU.string.basename = function (path) {
+	return path.replace( /.*\//, "" );
+}
  
 
 MDU.config.wildValue = {
