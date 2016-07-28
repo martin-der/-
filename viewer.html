@@ -101,7 +101,7 @@
 			var $anchor = $("body");
 			var $scroller = $('#tools');
 
-			var move = function() {
+			var handleScroll = function() {
 				var st = $(window).scrollTop();
 				var ot = $anchor.offset().top;
 				if(st > ot) {
@@ -112,14 +112,14 @@
 				} else {
 					if(st <= ot) {
 						$scroller.css({
-							position: "relative",
+							position: "absolute",
 							top: "", right : "1em"
 						});
 					}
 				}
 			};
-			$(window).scroll(move);
-			move();
+			$(window).scroll(handleScroll);
+			handleScroll();
 		}
 
 		jQuery(function() {    
