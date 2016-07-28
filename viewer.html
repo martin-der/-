@@ -52,6 +52,12 @@
 	<script  type="text/javascript">
 	//<![CDATA[
 
+		jQuery( document ).ajaxError(function( event, jqxhr, settings, thrownError ) {
+			if ( settings.url == "ajax/missing.html" ) {
+				jQuery( "div.log" ).text( "Triggered ajaxError handler." );
+			}
+		});
+	
 		var useHistory = window.onpopstate && window.history.pushState;
 
 		var themeConfigurator = new Theme.Configurator({
@@ -203,6 +209,7 @@
 				<tr>
 					<td>
 						<header class="main-container" style="text-align: center">
+
 							<div id="tools" class="reverse-boo" style="position:absolute; top:1em; right:1em;">
 								<table>
 									<tr>
