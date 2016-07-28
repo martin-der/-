@@ -30,3 +30,9 @@ header td.title  {
 footer {
 	text-align: center;
 }
+
+
+svg {
+	stroke: black;
+}
+
