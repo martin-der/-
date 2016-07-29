@@ -181,7 +181,7 @@ MarkdownDisplay.NameToURLConverter =  function(name_match, output){
 	return {
 		name_match : name_match,
 		output : output_choice,
-		getValues (name) {
+		getValues : function (name) {
 			var match = this.name_match.exec(name);
 			if (!match) return null;
 			match.shift();
@@ -205,7 +205,7 @@ MarkdownDisplay.config.NameToURLConverters = {
 
 
 MarkdownDisplay.BuilderUtil = {
-	hasMDSuffix(name) {
+	hasMDSuffix : function (name) {
 		return /\.[mM][dD]$/.test(name);
 	},
 	stripMDSuffix : function (name) {
