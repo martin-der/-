@@ -54,7 +54,7 @@ header h1 {
 }
 
 
- svg { 
- ▎   stroke: green; 
- } 
+.graph svg { 
+   stroke : green; 
+} 
 

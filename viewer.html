@@ -28,10 +28,10 @@
 	<!--script type="text/javascript" src="js/prettify.js"></script-->
 	<script type="text/javascript" src="js/Markdown.Extra.js"></script>
 
-	<script src="js/raphael-min.js"></script>
-	<script src="js/underscore-min.js"></script>
-	<script src="js/sequence-diagram-min.js"></script>
-	<script src="js/flowchart-latest.js"></script>
+	<script type="text/javascript" src="js/raphael-min.js"></script>
+	<script type="text/javascript" src="js/underscore-min.js"></script>
+	<script type="text/javascript" src="js/sequence-diagram-min.js"></script>
+	<script type="text/javascript" src="js/flowchart-latest.js"></script>
  
 
 	<script type="text/javascript" src="js/markdown-display.js"></script>
@@ -44,6 +44,8 @@
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.5.0/styles/default.min.css">
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.5.0/highlight.min.js"></script>
 
+	<script type="text/javascript" src="config.js">
+
 </head>
 <body>
 
@@ -52,11 +54,11 @@
 	<script  type="text/javascript">
 	//<![CDATA[
 
-		jQuery( document ).ajaxError(function( event, jqxhr, settings, thrownError ) {
-			if ( settings.url == "ajax/missing.html" ) {
-				jQuery( "div.log" ).text( "Triggered ajaxError handler." );
-			}
-		});
+
+		jQuery.support.cors = true;
+		
+		config.data.author.name = "Martin Salazard";
+		config.data.author.email = "msalazard@externe.generali.fr";
 	
 		var useHistory = window.onpopstate && window.history.pushState;
 
@@ -104,18 +106,16 @@
 			var handleScroll = function() {
 				var st = $(window).scrollTop();
 				var ot = $anchor.offset().top;
-				if(st > ot) {
+				if (st > ot) {
 					$scroller.css({
 						position: "fixed",
 						top: "1em", right : "1em"
 					});
 				} else {
-					if(st <= ot) {
-						$scroller.css({
-							position: "absolute",
-							top: "", right : "1em"
-						});
-					}
+					$scroller.css({
+						position: "absolute",
+						top: "", right : "1em"
+					});
 				}
 			};
 			$(window).scroll(handleScroll);

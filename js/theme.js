@@ -183,9 +183,9 @@ Theme.Configurator = Theme.Configurator || function(a) {
 						} else {
 							if (config.post_process.fail) {
 								var failures = [];
-								if (css_files.reset.error) failures.push(jQuery.extend(true, {name:'reset'}, css_files.reset));
-								if (css_files.main.error) failures.push(jQuery.extend(true, {name:'main'}, css_files.main));
-								if (css_files.mandatory.error) failures.push(jQuery.extend(true, {name:'mandatory'}, css_files.mandatory));
+								if (css_files.reset.error) failures.push(css_files.reset);
+								if (css_files.main.error) failures.push(css_files.main);
+								if (css_files.mandatory.error) failures.push(css_files.mandatory);
 								config.post_process.fail(theme,failures);
 							}
 						}

@@ -342,10 +342,10 @@ MarkdownDisplay.Builder = function(a) {
 					}
 				});
 				// build graphs
-				jQuery(config.content.target.content_selector).find("pre>code,pre>code").each(function() {
+				jQuery(config.content.target.content_selector).find("pre>code").each(function() {
 					var jqCode = jQuery(this);
 					var divGraph = jqCode.parent().after("<div>").next();
-					var codeToGraph = true;
+					var isGraph = true;
 					try {
 						if (jqCode.hasClass('sequence')) {
 							divGraph.html(jqCode.html());
@@ -357,11 +357,15 @@ MarkdownDisplay.Builder = function(a) {
 							divGraph.html(jqCode.html());
 							divGraph.flowchart()
 						} else {
-							codeToGraph = false;
+							isGraph = false;
 						}
-						if (codeToGraph) {
+						if (isGraph) {
 							jqCode.remove();
-							divGraph.addClass('sub-container');
+							divGraph.addClass('sub-container').addClass('graph');
+							divGraph.find("svg[stroke],svg>[stroke]").removeAttr('stroke');
+							var strokeColor = divGraph.find("svg").css('stroke');
+							//divGraph.find("svg marker>use[href='#raphael-marker-block']").css('fill', strokeColor);
+							divGraph.find("svg marker>use").css('fill', strokeColor);
 						} else {
 							jqCode.parent().addClass('sub-container');
 							// FIXME : adding divGraph and remove it in some cases is not efficient

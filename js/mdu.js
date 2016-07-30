@@ -1,6 +1,25 @@
 
 var MDU = {} || MDU;
 
+MDU.LogLevel = {
+	ERROR : 4,
+	WARN : 3,
+	INFO : 2,
+	DEBUG : 1,
+	NONE : 0,
+	fromString(level) {
+		if (!level) return null;
+		level = string1.toLowerCase();
+		if (level === 'error') return this.ERROR;
+		if (level === 'warn') return this.WARN;
+		if (level === 'info') return this.INFO;
+		if (level === 'debug') return this.DEBUG;
+		if (level === 'none') return this.NONE;
+		return null;
+	}
+	
+}
+
 MDU.PostProcessCallback = {
 	done : null,
 	fail : null
