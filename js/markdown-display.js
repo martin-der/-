@@ -342,6 +342,7 @@ MarkdownDisplay.Builder = function(a) {
 					}
 				});
 				// build graphs
+				var themeCSSModify = false;
 				jQuery(config.content.target.content_selector).find("pre>code").each(function() {
 					var jqCode = jQuery(this);
 					var divGraph = jqCode.parent().after("<div>").next();
@@ -363,8 +364,14 @@ MarkdownDisplay.Builder = function(a) {
 							jqCode.remove();
 							divGraph.addClass('sub-container').addClass('graph');
 							divGraph.find("svg[stroke],svg>[stroke]").removeAttr('stroke');
-							var strokeColor = divGraph.find("svg").css('stroke');
-							//divGraph.find("svg marker>use[href='#raphael-marker-block']").css('fill', strokeColor);
+							if ( ! themeCSSModify ) {
+								themeCSSModify = true;
+								var strokeColor = divGraph.find("svg").css('stroke');
+								//divGraph.find("svg marker>use[href='#raphael-marker-block']").css('fill', strokeColor);
+								//jQuery.injectCSS({
+								//	'.graph svg marker>use' : { fill : strokeColor }
+								//});
+							}
 							divGraph.find("svg marker>use").css('fill', strokeColor);
 						} else {
 							jqCode.parent().addClass('sub-container');
@@ -460,7 +467,8 @@ MarkdownDisplay.Builder = function(a) {
 
 	if (config.useHistory) { 
 		window.onpopstate = function(event) { 
-			builder.buildPage(event.state.content,event.state.title, builder.config.content.target.content_selector, builder.config.content.target.title_selector); 
+			var build_result = event.state;
+			builder.buildPage(build_result.content,build_result.title, config.content.target.content_selector, config.content.target.title_selector); 
 		}; 
 	}
 
