@@ -63,10 +63,14 @@
 	
 		var themeConfigurator = new Theme.Configurator({
 			post_process : {
-				done : function(theme) {
-					jQuery.growl.notice({title: "Theme changed", message: "New theme is '"+theme.label+"'"});
+				done : function(theme, context) {
+					if (context.trigger == 'setup') {
+						jQuery.growl.notice({title: "Theme loaded", message: "Actual theme is '"+theme.label+"'"});
+					} else {
+						jQuery.growl.notice({title: "Theme changed", message: "Theme now is '"+theme.label+"'"});
+					}
 				},
-				fail : function(theme, failures) {
+				fail : function(theme, context, failures) {
 					var message;
 					if (failures.length>0) {
 						message = "";
@@ -75,7 +79,11 @@
 							message = message + "<li>"+failures[i].url+":"+failures[i].error+"</li>";
 						message = "<ul>"+message+"</ul>";
 					}
-					jQuery.growl.warning({title: "Cannot set theme '"+theme.label+"' ("+theme.name+")", message: message});
+					if (context.trigger == 'setup') {
+						jQuery.growl.warning({title: "Cannot set theme '"+theme.label+"' ("+theme.name+")", message: message});
+					} else {
+						jQuery.growl.error({title: "Cannot set theme '"+theme.label+"' ("+theme.name+")", message: message});
+					}
 				}
 			},
 			default_theme : 'pdofsi',

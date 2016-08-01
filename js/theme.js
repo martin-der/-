@@ -28,6 +28,18 @@ Theme.Reference = function(name, label, url) {
 	};
 }
 
+/**
+ * config : {
+	post_process : {
+		done : function ( name, context )
+		fail : function ( name, context, failures )
+			@param context : {
+				trigger : 'setup'|'event.change'|'user'
+			}
+			@param failures : array of errorThrown objects as returned by jquery
+	}
+ }
+ */
 Theme.Configurator = Theme.Configurator || function(a) {
 	
 	var config = a ? jQuery.extend(true, {}, Theme.config.configurator, a ) : jQuery.extend(true, {}, Theme.config.configurator );
@@ -74,7 +86,7 @@ Theme.Configurator = Theme.Configurator || function(a) {
 					jQuery.blockUI({ message: '<h1>'+"Loading '"+theme+"'..."+'</h1>' });
 				}
 				try {
-					this_configurator.setTheme ( theme );
+					this_configurator.loadTheme ( theme, "event.change" );
 					if (Cookies) {
 						Cookies.set('theme', theme);
 					}
@@ -100,13 +112,18 @@ Theme.Configurator = Theme.Configurator || function(a) {
 			}
 
 			if ( name ) {
-				this.setTheme ( name );
+				this.loadTheme ( name, "setup" );
 				themeSelects.children("option[value='"+name+"']").prop('selected', true)
 			}
 
 		},
 		setTheme : function ( name ) {
+			this.loadTheme ( name, "user" );
+		},
+		loadTheme : function ( name, trigger ) {
 			var urlPrefix = '';
+			
+			var context = { trigger : trigger };
 			
 			var i;
 			
@@ -178,7 +195,7 @@ Theme.Configurator = Theme.Configurator || function(a) {
 							jQuery("head>style[id='theme_main_css']").html(css_files.main.content);
 							jQuery("head>style[id='theme_mandatory_css']").html(css_files.mandatory.content);
 							if (config.post_process.done) {
-								config.post_process.done(theme);
+								config.post_process.done(theme,context);
 							}
 						} else {
 							if (config.post_process.fail) {
@@ -186,7 +203,7 @@ Theme.Configurator = Theme.Configurator || function(a) {
 								if (css_files.reset.error) failures.push(css_files.reset);
 								if (css_files.main.error) failures.push(css_files.main);
 								if (css_files.mandatory.error) failures.push(css_files.mandatory);
-								config.post_process.fail(theme,failures);
+								config.post_process.fail(theme,context,failures);
 							}
 						}
 					}
