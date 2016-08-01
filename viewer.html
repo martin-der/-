@@ -60,6 +60,7 @@
 		
 		config.data.author.name = "Martin Salazard";
 		config.data.author.email = "msalazard@externe.generali.fr";
+
 	
 		var themeConfigurator = new Theme.Configurator({
 			post_process : {
@@ -187,7 +188,7 @@
 				},
 				pre_process : {
 					build : function(url) {
-						jQuery(all_selector).css('visibility','hidden');
+						jQuery(all_selector).css('visibility','hidden').css('opacity','0');
 						return true;
 					}
 				},
@@ -196,8 +197,7 @@
 						jQuery(content_selector).find('pre>code').each(function(i, block) {
 							hljs.highlightBlock(block);
 						});
-						jQuery(all_selector).block(blockUI_config);
-						jQuery(all_selector).css('visibility','visible').unblock(blockUI_config);
+						jQuery(all_selector).css('visibility','visible').animate({opacity:1},1000);
 					},
 					fail : function(url, error) {
 						jQuery.growl.error({ title: "Load failed", fixed:true, message: "Loading '"+url+"' : "+error });
