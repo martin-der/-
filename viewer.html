@@ -196,6 +196,8 @@
 					done : function(url,content) {
 						jQuery(content_selector).find('pre>code').each(function(i, block) {
 							hljs.highlightBlock(block);
+							if (jQuery(block).hasClass('hljs'))
+								jQuery(block).removeClass('hljs');
 						});
 						jQuery(all_selector).css('visibility','visible').animate({opacity:1},1000);
 					},
