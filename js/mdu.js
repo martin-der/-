@@ -104,6 +104,20 @@ MDU.WildString = function(a){
 	};
 };
 
+MDU.HTML = {};
+MDU.HTML.entityMap = {
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': '&quot;',
+    "'": '&#39;',
+    "/": '&#x2F;'
+};
+MDU.HTML.escape = function (text) {
+    return String(string).replace(/[&<>"'\/]/g, function (s) {
+      return entityMap[s];
+    });
+}
 
 MDU.REGEX_isAbsoluteURL = new RegExp('^(?:[a-z]+:)?//', 'i');
 MDU.isAbsoluteURL = function(url) {	
