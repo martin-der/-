@@ -30,21 +30,22 @@ Theme.Reference = function(name, label, url) {
 
 /**
  * config : {
-	post_process : {
-		done : function ( name, context )
-		fail : function ( name, context, failures )
-			@param context : {
-				trigger : 'setup'|'event.change'|'user'
-			}
-			@param failures : array of errorThrown objects as returned by jquery
-	}
- }
+ *	post_process : {
+ *		done : function ( name, context )
+ *		fail : function ( name, context, failures )
+ *			@param context : {
+ *				trigger : 'setup'|'event.change'|'user'
+ *			}
+ *			@param failures : array of errorThrown objects as returned by jquery
+ *	}
+ *}
  */
 Theme.Configurator = Theme.Configurator || function(a) {
 	
 	var config = a ? jQuery.extend(true, {}, Theme.config.configurator, a ) : jQuery.extend(true, {}, Theme.config.configurator );
 
 	return {
+		actual : null,
 		config : config,
 		setup : function() {
 
@@ -57,9 +58,16 @@ Theme.Configurator = Theme.Configurator || function(a) {
 			var themeSelects = jQuery(config.selects_selector);
 
 			var i, j;
+			
+			var NO_SECTION_NAME = "__null__";
 		
 			for ( j=0 ; j<themeSelects.length ; j++ ) {
 				var themeSelect = jQuery(themeSelects[j]);
+				themeSelect.append(jQuery("<option>", {
+					value : NO_SECTION_NAME,
+					text : "",
+					disabled : true
+				}));
 				for ( i=0 ; i<this.config.themes.length ; i++ ) {
 					var theme = this.config.themes[i];
 					themeSelect.append(jQuery("<option>", {
@@ -87,9 +95,6 @@ Theme.Configurator = Theme.Configurator || function(a) {
 				}
 				try {
 					this_configurator.loadTheme ( theme, "event.change" );
-					if (Cookies) {
-						Cookies.set('theme', theme);
-					}
 				} catch (ex) {
 					if (console && console.error) console.error(ex);
 					if (this_configurator.config.post_process.fail)
@@ -113,9 +118,14 @@ Theme.Configurator = Theme.Configurator || function(a) {
 
 			if ( name ) {
 				this.loadTheme ( name, "setup" );
-				themeSelects.children("option[value='"+name+"']").prop('selected', true)
+			} else {
+				updateUISelection ( NO_SECTION_NAME );
 			}
 
+		},
+		updateUISelection : function ( name ) {
+			var themeSelects = jQuery(config.selects_selector);
+			themeSelects.children("option[value='"+name+"']").prop('selected', true);
 		},
 		setTheme : function ( name ) {
 			this.loadTheme ( name, "user" );
@@ -124,6 +134,8 @@ Theme.Configurator = Theme.Configurator || function(a) {
 			var urlPrefix = '';
 			
 			var context = { trigger : trigger };
+			
+			var this_configurator = this;
 			
 			var i;
 			
@@ -169,12 +181,6 @@ Theme.Configurator = Theme.Configurator || function(a) {
 				cssUrl.main = theme.url+'/main.css';
 			}
 			
-			var css_files = {
-				reset : { name : 'reset', url : cssUrl.reset,loading : true, content : null, error : null },
-				main : { name : 'main', url : cssUrl.main,  loading : true, content : null, error : null },
-				mandatory : { name : 'mandatory', url : cssUrl.mandatory, loading : true, content : null, error : null }
-			}
-			
 			var jqXHR_done_handler_builder = function(css_file) {
 				return function(data, textStatus, jqXHR) {
 					var prefix = (css_file.url.indexOf('/') > -1) ? MDU.string.dirname(css_file.url) : "";
@@ -186,18 +192,33 @@ Theme.Configurator = Theme.Configurator || function(a) {
 					css_file.error = errorThrown;
 				};
 			};
+
+			var css_files = {
+				reset : { name : 'reset', url : cssUrl.reset, loading : true, content : null, error : null },
+				main : { name : 'main', url : cssUrl.main, loading : true, content : null, error : null },
+				mandatory : { name : 'mandatory', url : cssUrl.mandatory, loading : true, content : null, error : null }
+			}
+			
 			var jqXHR_always_handler_builder = function(css_file) {
 				return function() {
 					css_file.loading = false;
 					if (css_files.reset.loading === false && css_files.main.loading === false && css_files.mandatory.loading === false) {
-						if (css_files.reset.content !== null && css_files.main.content !== null && css_files.mandatory.content !== null) {
+						var success = css_files.reset.content !== null && css_files.main.content !== null && css_files.mandatory.content !== null;
+						if (success) {
 							jQuery("head>style[id='theme_reset_css']").html(css_files.reset.content);
 							jQuery("head>style[id='theme_main_css']").html(css_files.main.content);
 							jQuery("head>style[id='theme_mandatory_css']").html(css_files.mandatory.content);
+							this_configurator.actual = theme.name;
+							if (Cookies) {
+								Cookies.set('theme', theme.name);
+							}
 							if (config.post_process.done) {
 								config.post_process.done(theme,context);
 							}
 						} else {
+							if ( this_configurator.actual ) {
+								this_configurator.updateUISelection ( this_configurator.actual );
+							}
 							if (config.post_process.fail) {
 								var failures = [];
 								if (css_files.reset.error) failures.push(css_files.reset);
