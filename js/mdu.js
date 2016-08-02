@@ -117,6 +117,21 @@ MDU.getLocation = function(url) {
 	return l; 
 }
 
+MDU.stripParametersFromURL = function (url) {
+	var questionMarkPos = url.indexOf("?");
+	if (questionMarkPos<0) return url;
+	return url.substring(0,questionMarkPos);
+},
+MDU.getFilenameFromURL = function (url) {
+	url = MDU.stripParametersFromURL(url);
+	var m = url.toString().match(/.*\/(.+)/);
+	if (m && m.length > 1)
+	{
+		return m[1];
+	}
+	return null;
+}
+
 
 MDU.getURLParameter = function (key) {
 	return decodeURIComponent((new RegExp('[?|&]' + key + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [null, ''])[1].replace(/\+/g, '%20')) || null;
