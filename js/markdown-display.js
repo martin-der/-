@@ -199,6 +199,7 @@ MarkdownDisplay.NameToURLConverter =  function(name_match, output){
 };
 
 MarkdownDisplay.config.NameToURLConverters = {
+	GITHUB_DEVELOP : new MarkdownDisplay.NameToURLConverter ( /^github\/([^\/]+)\/([^\/]+)\/(.+)!$/ , 'https://raw.githubusercontent.com/{0}/{1}/develop/{2}'),
 	GITHUB : new MarkdownDisplay.NameToURLConverter ( /^github\/([^\/]+)\/([^\/]+)\/(.+)$/ , 'https://raw.githubusercontent.com/{0}/{1}/master/{2}')
 };
 
@@ -218,12 +219,7 @@ MarkdownDisplay.BuilderUtil = {
 	},
 	getFilenameFromURL : function (url)
 	{
-		var m = url.toString().match(/.*\/(.+)/);
-		if (m && m.length > 1)
-		{
-			return m[1];
-		}
-		return null;
+		return MDU.getFilenameFromURL(url);
 	},
 	getTitleFromMarkdownURL : function (url) {
 		var title = this.getFilenameFromURL(url);
@@ -396,38 +392,44 @@ MarkdownDisplay.Builder = function(a) {
 				}
 			}
 		},
-		buildPage : function (mdContent, title, targetContent, targetTitle) {
+		buildPage : function ( data, targetContent, targetTitle) {
+			
+			var mdContent = data.content;
+			var title = data.title;
 
 			var htmlContent = MarkdownDisplay.converter.toHtml(mdContent);
-
-			this.result.content = mdContent;
-			this.result.title = title;
-			this.result.html_title = title;
 
 
 			jQuery(targetContent).html(htmlContent);
 			if (title) {
 				document.title = title;
 				jQuery(targetTitle).html(title);
-				jQuery(targetTitle).attr(title);
-				
+				if (data.source.url) {
+					jQuery(targetTitle).attr('tooltip',MDU.HTML.escape(data.source.url));
+				}
 			}
 		},
 		build : function(config) {
-			jQuery.extend(true, this.config, config);
+			var local_config = jQuery.extend(true, {}, this.config, config);
 
-			if ( this.config.content.source.text ) {
-				this.buildPage ( this.config.content.source.text, this.config.content.title, this.config.target.content_selector, this.config.target.title_selector );
-				return;
+			var data = {
+				source : jQuery.extend(true,{},this.config.content.source),
+				title : this.config.content.title
+			};
+
+			if ( local_config.content.source.text ) {
+				data.content = this.config.content.source.text;
+				this.buildPage ( data, this.config.target.content_selector, this.config.target.title_selector );
+				return ;
 			}
 			
 			if ( !this.config.content.source.url && !this.config.content.source.url_parameter ) {
 				throw "When no text is given, one of 'config.content.source.url' or 'config.content.source.url_parameter' must be provided";
 			}
 			
-			var url = this.config.content.source.url;
+			var url = local_config.content.source.url;
 			if (!url) {
-				url = MarkdownDisplay.BuilderUtil.getURLParameter(this.config.content.source.url_parameter);
+				url = MarkdownDisplay.BuilderUtil.getURLParameter(local_config.content.source.url_parameter);
 				if (url == null) {
 					var parameters = location.search;
 					if ( parameters && parameters!='' ) {
@@ -436,14 +438,14 @@ MarkdownDisplay.Builder = function(a) {
 					}
 				}
 				if (url == null) {
-					throw "No URL parameter '"+this.config.content.source.url_parameter+"' found";
+					throw "No URL parameter '"+local_config.content.source.url_parameter+"' found";
 				}
 			}
 			
-			if (this.config.content.nameToURLConverters) {
+			if (local_config.content.nameToURLConverters) {
 				var i;
-				for ( i=0 ;  i<this.config.content.nameToURLConverters.length ; i++ ) {
-					var converter = this.config.content.nameToURLConverters[i];
+				for ( i=0 ;  i<local_config.content.nameToURLConverters.length ; i++ ) {
+					var converter = local_config.content.nameToURLConverters[i];
 					if (converter.name_match.exec(url)) {
 						url = converter.convert(url);
 						break;
@@ -451,24 +453,24 @@ MarkdownDisplay.Builder = function(a) {
 				}
 			}
 
+			data.source.url = url;
+
 			builder.pre_process.build(url);
 			
-			if ( !this.config.content.from_url_fetcher ) {
+			if ( !local_config.content.from_url_fetcher ) {
 				throw "When no text is given, 'config.content.from_url_fetcher' must be provided";
 			}
-			this.config.content.from_url_fetcher.load(url);
+			local_config.content.from_url_fetcher.load(url);
 
-			this.result.url = url;
-			
-			return this.result;
+			return data;
 		},
 		Util : MarkdownDisplay.BuilderUtil
 	};
 
 	if (config.useHistory) { 
 		window.onpopstate = function(event) { 
-			var build_result = event.state;
-			builder.buildPage(build_result.content,build_result.title, config.content.target.content_selector, config.content.target.title_selector); 
+			var data = event.state;
+			builder.buildPage(data, config.content.target.content_selector, config.content.target.title_selector); 
 		}; 
 	}
 
@@ -481,7 +483,12 @@ MarkdownDisplay.Builder = function(a) {
 				callback : {
 					done : function (url, content){
 						var title = builder.Util.getTitleFromMarkdownURL(url);
-						builder.buildPage(content,title, builder_config.content.target.content_selector, builder_config.content.target.title_selector);
+						var data = {
+							content : content,
+							title : title,
+							source : jQuery.extend(true, {url : url}, config.content.source)
+						};
+						builder.buildPage(data, builder_config.content.target.content_selector, builder_config.content.target.title_selector);
 						builder.post_process.done(url,content);
 					},
 					fail : function (url, error) {
