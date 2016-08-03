@@ -7,7 +7,7 @@ MDU.LogLevel = {
 	INFO : 2,
 	DEBUG : 1,
 	NONE : 0,
-	fromString(level) {
+	fromString : function (level) {
 		if (!level) return null;
 		level = string1.toLowerCase();
 		if (level === 'error') return this.ERROR;
@@ -104,38 +104,49 @@ MDU.WildString = function(a){
 	};
 };
 
+MDU.XML = {};
+MDU.XML.entityMap = {
+	"&": "&amp;",
+	"<": "&lt;",
+	">": "&gt;",
+};
+MDU.XML.escape = function (text) {
+	return text.replace(/[&<>]/g, function (s) {
+		return MDU.XML.entityMap[s];
+	});
+};
 MDU.HTML = {};
 MDU.HTML.entityMap = {
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': '&quot;',
-    "'": '&#39;',
-    "/": '&#x2F;'
+	"&": "&amp;",
+	"<": "&lt;",
+	">": "&gt;",
+	'"': '&quot;',
+	"'": '&#39;',
+	"/": '&#x2F;'
 };
 MDU.HTML.escape = function (text) {
-    return String(string).replace(/[&<>"'\/]/g, function (s) {
-      return entityMap[s];
-    });
-}
+	return text.replace(/[&<>"'\/]/g, function (s) {
+		return MDU.HTML.entityMap[s];
+	});
+};
 
 MDU.REGEX_isAbsoluteURL = new RegExp('^(?:[a-z]+:)?//', 'i');
 MDU.isAbsoluteURL = function(url) {	
 	return MDU.REGEX_isAbsoluteURL.test(url); 	
-}
+};
 
 MDU.getLocation = function(url) { 
 	var a = document.createElement("a"); 
 	a.href = url; 
 	var l = { protocol : a.protocol, hostname : a.hostname, port : a.port, pathname : a.pathname }; 
 	return l; 
-}
+};
 
 MDU.stripParametersFromURL = function (url) {
 	var questionMarkPos = url.indexOf("?");
 	if (questionMarkPos<0) return url;
 	return url.substring(0,questionMarkPos);
-},
+};
 MDU.getFilenameFromURL = function (url) {
 	url = MDU.stripParametersFromURL(url);
 	var m = url.toString().match(/.*\/(.+)/);
@@ -144,7 +155,7 @@ MDU.getFilenameFromURL = function (url) {
 		return m[1];
 	}
 	return null;
-}
+};
 
 
 MDU.getURLParameter = function (key) {
