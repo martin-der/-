@@ -119,7 +119,7 @@ Theme.Configurator = Theme.Configurator || function(a) {
 			if ( name ) {
 				this.loadTheme ( name, "setup" );
 			} else {
-				updateUISelection ( NO_SECTION_NAME );
+				this.updateUISelection ( NO_SECTION_NAME );
 			}
 
 		},
