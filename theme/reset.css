@@ -1,7 +1,17 @@
+
+
 body {
 	background: none;
 	background-image : none;
+	margin: 0px; 
 }
+body,html { 
+	height:100% 
+} 
+.viewer.body { 
+	min-height:100%; 
+} 
+
 
 hr {
     border: 0px;
