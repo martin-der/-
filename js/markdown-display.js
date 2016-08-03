@@ -82,10 +82,16 @@ MarkdownDisplay.Loader.AbstractLoader = function(a, b) {
 	
 	return {
 		config : config,
-		handleFail : function (url, error) {
+		handleDone : function (url, content, extra, user) {
+			var done_callback = this.config.callback.done;
+			if (done_callback) {
+				done_callback(url,content,extra,user);
+			}
+		},
+		handleFail : function (url, error, extra, user) {
 			var fail_callback = this.config.callback.fail;
 			if (fail_callback) {
-				fail_callback(url,error);
+				fail_callback(url,error,extra,user);
 			} else {
 				throw "Error while loading content from URL '"+url+"' : "+error;
 			}
@@ -100,7 +106,8 @@ MarkdownDisplay.Loader.ViaProxyLoader = function(a, b) {
 	var script_selector = "body>script[id='"+script_id+"']";
 	
 	var this_loader = {
-		load : function (url) {
+		user_data : null,
+		load : function (url, user) {
 			if (!MarkdownDisplay.Loader_onLoadedFromFarAway) MarkdownDisplay.Loader_onLoadedFromFarAway = this.onLoadedFromFarAway;
 			if (jQuery(script_selector).length==0) {
 				jQuery("body").append("<script id='"+script_id+"' />");
@@ -113,21 +120,18 @@ MarkdownDisplay.Loader.ViaProxyLoader = function(a, b) {
 				//});
 				script.attr('src', 'http://www.whateverorigin.org/get?url='+encodeURIComponent(url)+'&callback=MarkdownDisplay.Loader_onLoadedFromFarAway');
 			} catch(ex) {
-				this.handleFail (url,ex);
+				this.handleFail (url,ex,user);
 			}
 		},
 		onLoadedFromFarAway : function (data) {
 			
 			var url = data.status.url;
+			var extra = {};
 		
 			if (data.status.http_code != 200) {
-				var fail_callback = MarkdownDisplay.Loader_instance.config.callback.fail;
-				MarkdownDisplay.Loader_instance.handleFail (url,ex);
-			}
-
-			var done_callback = MarkdownDisplay.Loader_instance.config.callback.done;
-			if (done_callback) {
-				done_callback(url, data.contents);
+				MarkdownDisplay.Loader_instance.handleFail (url, ex, extra, MarkdownDisplay.Loader_instance.user_data);
+			} else {
+				MarkdownDisplay.Loader_instance.handleDone(url, data.contents, extra, MarkdownDisplay.Loader_instance.user_data);
 			}
 		}
 	};
@@ -140,15 +144,26 @@ MarkdownDisplay.Loader.ViaAjaxLoader = function(a, b) {
 
 	var this_loader = this;
 
-	var load = function (url) {
+	var load = function (url,user) {
 		var this_loader_in_load = this_loader;
 
 		var jqXHR = jQuery.ajax( url )
 		.done(function(data, textStatus, jqXHR) {
-			this_loader_in_load.config.callback.done (url, data);
+			var extra = {};
+			var lastModified = jqXHR.getResponseHeader('Last-Modified');
+			if (!lastModified) {
+				lastModified = jqXHR.getResponseHeader('Date');
+			}
+			if (lastModified) {
+				try {
+					extra.modification_date = new Date(lastModified);
+				} catch (e) { }
+			}
+			this_loader_in_load.handleDone (url, data, extra, user);
 		})
 		.fail(function(jqXHR, textStatus, errorThrown) {
-			this_loader_in_load.handleFail (url,textStatus+" ("+errorThrown+")");
+			var extra = {};
+			this_loader_in_load.handleFail (url,textStatus+" ("+errorThrown+")", extra, user);
 		});
 	};
 	
@@ -217,12 +232,8 @@ MarkdownDisplay.BuilderUtil = {
 		}
 		return name;
 	},
-	getFilenameFromURL : function (url)
-	{
-		return MDU.getFilenameFromURL(url);
-	},
 	getTitleFromMarkdownURL : function (url) {
-		var title = this.getFilenameFromURL(url);
+		var title = MDU.getFilenameFromURL(url);
 		
 		if (title) { 
 			title = this.stripMDSuffix ( title );
@@ -246,6 +257,7 @@ MarkdownDisplay.converter = {
 			instance.convert = function(text) {
 				 return instance.backend.makeHtml(text);
 			};
+			return;
 		}
 		// default : pagedown
 		instance.backend = new Markdown.Converter();
@@ -286,16 +298,22 @@ MarkdownDisplay.Builder = function(a) {
 	var builder = { 
 		config : config,
 		result : {},
+		appendToData : function ( data, url, content ) {
+			return jQuery.extend(true, { content : content, source : { url : url } }, data);
+		},
 		pre_process : {
-			build : function(url) {
+			build : function(data) {
+				data.title = builder.Util.getTitleFromMarkdownURL(data.source.url);
 				if (builder.config.pre_process.build) {
-					return builder.config.pre_process.build(url);
+					return builder.config.pre_process.build(data);
 				}
 				return true;
 			}
 		},
 		post_process : {
-			done : function(url,content) {
+			done : function(data) {
+				var content = data.content;
+				var url = data.source.url;
 				// Sanitize href
 				jQuery(config.content.target.content_selector).find("a[href]").each(function(){
 					var this_a = jQuery(this);
@@ -324,9 +342,9 @@ MarkdownDisplay.Builder = function(a) {
 								var result = builder.build({content:{source:{text:null, url_parameter:null, url:real_url}}});
 								if (config.useHistory) {
 									try {
-										builder.pre_process.build(url);
+										builder.pre_process.build(result);
 										window.history.pushState(result, result.title, location.protocol + '//' + location.host + location.pathname+"?md="+real_url);
-										builder.post_process.done(url,content);
+										builder.post_process.done(result);
 									} catch (ex) {
 										if (console &&  console.error) console.error ('No hsitory', ex);
 									}
@@ -381,14 +399,14 @@ MarkdownDisplay.Builder = function(a) {
 				});
 
 				if (builder.config.post_process.done) {
-					builder.config.post_process.done(url,content);
+					builder.config.post_process.done(data);
 				}
 			},
-			fail : function(url,error) {
+			fail : function(data,error) {
 				if (builder.config.post_process.fail) {
-					builder.config.post_process.fail(url,error);
+					builder.config.post_process.fail(data,error);
 				} else {
-					throw "unable to load '"+url+"' : "+error;
+					throw "Unable to load '"+data.url+"' : "+error;
 				}
 			}
 		},
@@ -405,11 +423,11 @@ MarkdownDisplay.Builder = function(a) {
 				document.title = title;
 				jQuery(targetTitle).html(title);
 				if (data.source.url) {
-					jQuery(targetTitle).attr('tooltip',MDU.HTML.escape(data.source.url));
+					jQuery(targetTitle).attr('title',data.source.url);
 				}
 			}
 		},
-		build : function(config) {
+		acquireThenBuild : function(config) {
 			var local_config = jQuery.extend(true, {}, this.config, config);
 
 			var data = {
@@ -420,7 +438,7 @@ MarkdownDisplay.Builder = function(a) {
 			if ( local_config.content.source.text ) {
 				data.content = this.config.content.source.text;
 				this.buildPage ( data, this.config.target.content_selector, this.config.target.title_selector );
-				return ;
+				return;
 			}
 			
 			if ( !this.config.content.source.url && !this.config.content.source.url_parameter ) {
@@ -442,11 +460,13 @@ MarkdownDisplay.Builder = function(a) {
 				}
 			}
 			
+			var simplified_url = null;
 			if (local_config.content.nameToURLConverters) {
 				var i;
 				for ( i=0 ;  i<local_config.content.nameToURLConverters.length ; i++ ) {
 					var converter = local_config.content.nameToURLConverters[i];
 					if (converter.name_match.exec(url)) {
+						simplified_url = url;
 						url = converter.convert(url);
 						break;
 					}
@@ -454,15 +474,13 @@ MarkdownDisplay.Builder = function(a) {
 			}
 
 			data.source.url = url;
+			if (simplified_url)
+				data.source.simplified_url = simplified_url;
 
-			builder.pre_process.build(url);
-			
 			if ( !local_config.content.from_url_fetcher ) {
 				throw "When no text is given, 'config.content.from_url_fetcher' must be provided";
 			}
-			local_config.content.from_url_fetcher.load(url);
-
-			return data;
+			local_config.content.from_url_fetcher.load(url,data);
 		},
 		Util : MarkdownDisplay.BuilderUtil
 	};
@@ -481,18 +499,16 @@ MarkdownDisplay.Builder = function(a) {
 			var content_selector = builder_config.content.target.content_selector;
 			config.content.from_url_fetcher = new MarkdownDisplay.Loader.ViaAjaxLoader({
 				callback : {
-					done : function (url, content){
-						var title = builder.Util.getTitleFromMarkdownURL(url);
-						var data = {
-							content : content,
-							title : title,
-							source : jQuery.extend(true, {url : url}, config.content.source)
-						};
+					done : function (url, content, extra, user){
+						var data = builder.appendToData(user, url, content);
+						data.source.modification_date = extra.modification_date;
+						builder.pre_process.build(data);
 						builder.buildPage(data, builder_config.content.target.content_selector, builder_config.content.target.title_selector);
-						builder.post_process.done(url,content);
+						builder.post_process.done(data);
 					},
-					fail : function (url, error) {
-						builder.post_process.fail(url, error);
+					fail : function (url, error, extra, user) {
+						var data = builder.appendToData(user, url, content);
+						builder.post_process.fail(data, error);
 					}
 				}
 			});

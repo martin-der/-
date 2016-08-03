@@ -19,6 +19,8 @@
 	<script type="text/javascript" src="js/jquery.blockUI.js"></script>
 	<script src="js/jquery.growl.js" type="text/javascript"></script>
 	<link href="css/jquery.growl.css" rel="stylesheet" type="text/css" />
+	<script type="text/javascript" src="js/tooltipster.bundle.min.js"></script>
+	<link href="css/tooltipster.bundle.min.css" rel="stylesheet" type="text/css" />
 	<script type="text/javascript" src="js/mustache.min.js"></script>
 	<script type="text/javascript" src="js/jss.js"></script>
 	<!--script type="text/javascript" src="js/showdown.min.js"></script-->
@@ -33,7 +35,8 @@
 	<script type="text/javascript" src="js/underscore-min.js"></script>
 	<script type="text/javascript" src="js/sequence-diagram-min.js"></script>
 	<script type="text/javascript" src="js/flowchart-latest.js"></script>
- 
+
+
 
 	<script type="text/javascript" src="js/markdown-display.js"></script>
 	<!--link rel="stylesheet" href="css/markdown.css"></script-->
@@ -51,7 +54,7 @@
 <body>
 
 	<script id="markdown-display_on-the-fly-loader" ></script>
- 
+	
 	<script  type="text/javascript">
 	//<![CDATA[
 
@@ -170,6 +173,9 @@
 				doc.save((build_result?build_result.title:'untitled')+'.pdf');
 			}).css('cursor','pointer');
 			
+			//var stash_prefix = 'http://git.groupe.generali.fr';
+			var stash_prefix = 'http://gf215739/git-stash';
+			
 			markdownBuilder = new MarkdownDisplay.Builder({
 				content : {
 					source : {
@@ -180,34 +186,52 @@
 						content_selector : content_selector
 					},
 					nameToURLConverters : [
+						MarkdownDisplay.config.NameToURLConverters.GITHUB_DEVELOP,
 						MarkdownDisplay.config.NameToURLConverters.GITHUB,
-						new MarkdownDisplay.NameToURLConverter ( /^generali\/~([^\/]+)\/([^\/]+)\/(.+)$/ , 'http://git.groupe.generali.fr/users/{0}/repos/{1}/browse/{2}?at=master&raw'),
-						new MarkdownDisplay.NameToURLConverter ( /^generali\/([^\/]+)\/(.+)$/ , 'http://git.groupe.generali.fr/users/b010cdx/repos/{0}/browse/{1}?at=master&raw'),
-						new MarkdownDisplay.NameToURLConverter ( /^livrable\/(.+)$/ , 'http://git.groupe.generali.fr/users/b010cdx/repos/document/browse/{0}?at=master&raw' )
+						new MarkdownDisplay.NameToURLConverter ( /^generali\/~([^\/]+)\/([^\/]+)\/(.+)!$/ , stash_prefix+'/users/{0}/repos/{1}/browse/{2}?at=develop&raw'),
+						new MarkdownDisplay.NameToURLConverter ( /^generali\/~([^\/]+)\/([^\/]+)\/(.+)$/ , stash_prefix+'/users/{0}/repos/{1}/browse/{2}?at=master&raw'),
+						new MarkdownDisplay.NameToURLConverter ( /^generali\/([^\/]+)\/(.+)!$/ , stash_prefix+'/users/b010cdx/repos/{0}/browse/{1}?at=develop&raw'),
+						new MarkdownDisplay.NameToURLConverter ( /^generali\/([^\/]+)\/(.+)$/ , stash_prefix+'/users/b010cdx/repos/{0}/browse/{1}?at=master&raw'),
+						new MarkdownDisplay.NameToURLConverter ( /^doc\/(.+)!$/ , stash_prefix+'/users/b010cdx/repos/web-static/browse/{0}?at=develop&raw' ),
+						new MarkdownDisplay.NameToURLConverter ( /^doc\/(.+)$/ , stash_prefix+'/users/b010cdx/repos/web-static/browse/{0}?at=master&raw' )
 					],
 				},
 				pre_process : {
-					build : function(url) {
+					build : function(data) {
 						jQuery(all_selector).css('visibility','hidden').css('opacity','0');
 						return true;
 					}
 				},
 				post_process : {
-					done : function(url,content) {
+					done : function(data) {
 						jQuery(content_selector).find('pre>code').each(function(i, block) {
 							hljs.highlightBlock(block);
 							if (jQuery(block).hasClass('hljs'))
 								jQuery(block).removeClass('hljs');
 						});
 						jQuery(all_selector).css('visibility','visible').animate({opacity:1},1000);
+						jQuery(title_selector).tooltipster({
+							interactive : true,
+							functionInit : function(instance, helper){
+								var infoTable = jQuery("<table>");
+								if (data.source.url)
+									infoTable.append( '<tr><td>URL</td><td><a href="'+data.source.url+'">' + MDU.XML.escape(data.source.url) +  '</a></td></tr>' )
+								if (data.source.simplified_url)
+									infoTable.append( '<tr><td>Simplified URL</td><td>' + MDU.XML.escape(data.source.simplified_url) +  '</td></tr>' )
+								if (data.source.modification_date)
+									infoTable.append( '<tr><td>Modified</td><td>' + MDU.XML.escape(data.source.modification_date.toLocaleString()) +  '</td></tr>' )
+									
+								instance.content(infoTable[0]);
+							}
+						});
 					},
-					fail : function(url, error) {
-						jQuery.growl.error({ title: "Load failed", fixed:true, message: "Loading '"+url+"' : "+error });
+					fail : function(data, error) {
+						jQuery.growl.error({ title: "Load failed", fixed:true, message: "Loading '"+data.url+"' : "+error });
 					}
 				}
 			});
 
-			build_result = markdownBuilder.build();
+			build_result = markdownBuilder.acquireThenBuild();
 		});
 	//]]>
 	</script>
