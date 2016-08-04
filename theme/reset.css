@@ -1,12 +1,13 @@
 
-
+html {
+	min-height:100% 
+}
 body {
+	margin: 0px;
+}
+body,html {
 	background: none;
 	background-image : none;
-	margin: 0px; 
-}
-body,html { 
-	height:100% 
 } 
 .viewer.body { 
 	min-height:100%; 
