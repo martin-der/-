@@ -299,7 +299,7 @@ MarkdownDisplay.Builder = function(a) {
 		config : config,
 		result : {},
 		appendToData : function ( data, url, content ) {
-			return jQuery.extend(true, { content : content, source : { url : url } }, data);
+			return jQuery.extend(true, {}, data, { content : content, source : { url : url } });
 		},
 		pre_process : {
 			build : function(data) {
@@ -315,20 +315,23 @@ MarkdownDisplay.Builder = function(a) {
 				var content = data.content;
 				var url = data.source.url;
 				// Sanitize href
+				var base_url = url.substring(0, url.lastIndexOf("/"));
 				jQuery(config.content.target.content_selector).find("a[href]").each(function(){
 					var this_a = jQuery(this);
 					var href = this_a.attr('href');
 					var isAbsolute = MDU.isAbsoluteURL(href);
 
 					var real_url;
+					var hash_part = MDU.getHashPartFromURL(href);
 					if (isAbsolute) {
 						real_url = href;
+					} else if (href.startsWith('#')) {
+						// don't do anything
 					} else {
 						if (href.startsWith('/')) {
 							var doc_location = MDU.getLocation(url);
 							real_url = doc_location.protocol + '//' + doc_location.host + href;
 						} else {
-							var base_url = url.substring(0, url.lastIndexOf("/"));
 							real_url = base_url+'/'+href;
 						}
 					}
@@ -507,7 +510,7 @@ MarkdownDisplay.Builder = function(a) {
 						builder.post_process.done(data);
 					},
 					fail : function (url, error, extra, user) {
-						var data = builder.appendToData(user, url, content);
+						var data = builder.appendToData(user, url, null);
 						builder.post_process.fail(data, error);
 					}
 				}
