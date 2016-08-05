@@ -15,6 +15,7 @@
 
 	<link rel="icon" type="image/png" href="image/page/viewer.png" />
 
+	<link href="css/ui.css" rel="stylesheet" type="text/css" />
 
 	<script type="text/javascript" src="js/jquery-3.1.0.min.js"></script>
 	<script type="text/javascript" src="js/jquery.blockUI.js"></script>
@@ -134,8 +135,38 @@
 			handleScroll();
 		}
 
-		jQuery(function() {    
+		var blockUI_config = {
+			message : null,
+			fadeIn  : 0,
+			fadeOut : 1500,
+			overlayCSS : {
+				backgroundColor : '#fff',
+				opacity : 1
+			}
+		};
+		var blockUI_menu_config = {
+			baseZ : 1000,
+			message : null,
+			fadeIn  : 0,
+			fadeOut : 0,
+			overlayCSS : {
+				backgroundColor : '#000',
+				opacity : 0.85
+			}
+		};
+
+
+		jQuery(function() {
 			var markdownBuilder = null;
+
+			jQuery('div.menu-button').click(function() {
+				jQuery.blockUI(blockUI_menu_config);
+				jQuery(this).toggleClass('open').promise().done(function(){
+					if (!jQuery(this).hasClass('open')) {
+						jQuery.unblockUI(blockUI_menu_config);
+					}
+				});
+			});
 
 			try {
 				themeConfigurator.setup();
@@ -147,16 +178,6 @@
 			var content_selector = "div.container>div.content";
 			var title_selector = "span.title";
 			var all_selector = content_selector+","+title_selector;
-
-			var blockUI_config = {
-				message : null,
-				fadeIn  : 0,
-				fadeOut : 1500,
-				overlayCSS : {
-					backgroundColor : '#fff',
-					opacity : 1
-				}
-			};
 
 			var build_result;
 
@@ -247,7 +268,32 @@
 					<td>
 						<header class="main-container" style="text-align: center">
 
-							<div id="tools" class="reverse-boo" style="position:absolute; top:1em; right:1em;">
+
+							<div id="tools" class="reverse-boo" style="z-index : 2000; position:absolute; top:1em; left:1em;">
+								<!--div class="menu-button flavor-a">
+								  <span></span>
+								  <span></span>
+								  <span></span>
+								</div-->
+								<div class="menu-button flavor-b">
+								  <span></span>
+								  <span></span>
+								  <span></span>
+								  <span></span>
+								  <span></span>
+								  <span></span>
+								</div>
+								<!--div class="menu-button flavor-c">
+								  <span></span>
+								  <span></span>
+								  <span></span>
+								  <span></span>
+								</div>
+								<div class="menu-button flavor-d">
+								  <span></span>
+								  <span></span>
+								  <span></span>
+								</div-->
 								<table>
 									<tr>
 										<td colspan="2">
