@@ -251,7 +251,7 @@
 						});
 					},
 					fail : function(data, error) {
-						jQuery.growl.error({ title: "Load failed", fixed:true, message: "Loading '"+data.url+"' : "+error });
+						jQuery.growl.error({ title: "Load failed", fixed:true, message: "Loading '"+data.source.url+"' : "+error });
 					}
 				}
 			});
