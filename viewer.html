@@ -114,7 +114,7 @@
 
 		function moveScroller() {
 			var $anchor = $("body");
-			var $scroller = $('#tools');
+			var $scroller = $('#menu-button');
 
 			var handleScroll = function() {
 				var st = $(window).scrollTop();
@@ -215,7 +215,8 @@
 						new MarkdownDisplay.NameToURLConverter ( /^generali\/([^\/]+)\/(.+)!$/ , stash_prefix+'/users/b010cdx/repos/{0}/browse/{1}?at=develop&raw'),
 						new MarkdownDisplay.NameToURLConverter ( /^generali\/([^\/]+)\/(.+)$/ , stash_prefix+'/users/b010cdx/repos/{0}/browse/{1}?at=master&raw'),
 						new MarkdownDisplay.NameToURLConverter ( /^doc\/(.+)!$/ , stash_prefix+'/users/b010cdx/repos/web-static/browse/{0}?at=develop&raw' ),
-						new MarkdownDisplay.NameToURLConverter ( /^doc\/(.+)$/ , stash_prefix+'/users/b010cdx/repos/web-static/browse/{0}?at=master&raw' )
+						new MarkdownDisplay.NameToURLConverter ( /^doc\/(.+)$/ , stash_prefix+'/users/b010cdx/repos/web-static/browse/{0}?at=master&raw' ),
+						new MarkdownDisplay.NameToURLConverter ( /^ldoc\/(.+)$/ , '/doc/{0}' )
 					],
 				},
 				pre_process : {
@@ -268,8 +269,7 @@
 					<td>
 						<header class="main-container" style="text-align: center">
 
-
-							<div id="tools" class="reverse-boo" style="z-index : 2000; position:absolute; top:1em; left:1em;">
+							<div id="menu-button" class="reverse-boo" style="z-index : 2000 ; position:absolute; top:1em; left:1em">
 								<!--div class="menu-button flavor-a">
 								  <span></span>
 								  <span></span>
@@ -294,6 +294,9 @@
 								  <span></span>
 								  <span></span>
 								</div-->
+							</div>
+
+							<div id="tools" style="display:none">
 								<table>
 									<tr>
 										<td colspan="2">
