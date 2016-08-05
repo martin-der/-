@@ -108,7 +108,7 @@ MDU.XML = {};
 MDU.XML.entityMap = {
 	"&": "&amp;",
 	"<": "&lt;",
-	">": "&gt;",
+	">": "&gt;"
 };
 MDU.XML.escape = function (text) {
 	return text.replace(/[&<>]/g, function (s) {
