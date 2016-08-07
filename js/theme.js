@@ -90,9 +90,7 @@ Theme.Configurator = Theme.Configurator || function(a) {
 				var option = jQuery('option:selected', this);
 				var theme = this.value;
 				
-				if (jQuery.blockUI) {
-					jQuery.blockUI({ message: '<h1>'+"Loading '"+theme+"'..."+'</h1>' });
-				}
+				themeSelects.prop('disabled', true);
 				try {
 					this_configurator.loadTheme ( theme, "event.change" );
 				} catch (ex) {
@@ -100,9 +98,7 @@ Theme.Configurator = Theme.Configurator || function(a) {
 					if (this_configurator.config.post_process.fail)
 						this_configurator.config.post_process.fail(theme, ex);
 				} finally {
-					if (jQuery.blockUI) {
-						jQuery.unblockUI();
-					}
+					themeSelects.prop('disabled', false);
 				}
 
 			});
