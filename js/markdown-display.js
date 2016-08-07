@@ -358,6 +358,8 @@ MarkdownDisplay.Builder = function(a) {
 						this_a.attr("href",real_url);
 					}
 				});
+				// build mathjax
+				//MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
 				// build graphs
 				var themeCSSModify = false;
 				jQuery(config.content.target.content_selector).find("pre>code").each(function() {
