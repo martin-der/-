@@ -5,7 +5,6 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 	
-	<!--script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script-->
 	<link rel="stylesheet" href="https://cdn.rawgit.com/martin-work/web-util/master/static/css/common.css" />
 	<script type="text/javascript" src="https://cdn.rawgit.com/martin-work/web-util/master/static/js/misc.js"></script>
 	<link rel="stylesheet" href="css/viewer.css" />
@@ -23,9 +22,11 @@
 	<link href="css/jquery.growl.css" rel="stylesheet" type="text/css" />
 	<script type="text/javascript" src="js/tooltipster.bundle.min.js"></script>
 	<link href="css/tooltipster.bundle.min.css" rel="stylesheet" type="text/css" />
-	<script type="text/javascript" src="js/mustache.min.js"></script>
+	<script type="text/javascript" src="js/handlebars-v4.0.5.js"></script>
 	<script type="text/javascript" src="js/jss.js"></script>
 	<!--script type="text/javascript" src="js/showdown.min.js"></script-->
+	<!--script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script-->
+	<!--script type="text/javascript" src="js/MathJax.js"></script-->
 
 	<script type="text/javascript" src="js/Markdown.Converter.js"></script>
 	<script type="text/javascript" src="js/Markdown.Sanitizer.js"></script>
@@ -56,6 +57,13 @@
 <body>
 
 	<script id="markdown-display_on-the-fly-loader" ></script>
+
+	<script id="footer-template" type="text/x-handlebars-template">
+		<span>
+			{{author.name}}<br/>
+			bla bla bla
+		</span>
+	</script>
 	
 	<script  type="text/javascript">
 	//<![CDATA[
@@ -135,28 +143,40 @@
 			handleScroll();
 		}
 
-		var blockUI_config = {
-			message : null,
-			fadeIn  : 0,
-			fadeOut : 1500,
-			overlayCSS : {
-				backgroundColor : '#fff',
-				opacity : 1
-			}
-		};
-		var blockUI_menu_config = {
-			baseZ : 1000,
-			message : null,
-			fadeIn  : 0,
-			fadeOut : 0,
-			overlayCSS : {
-				backgroundColor : '#000',
-				opacity : 0.85
-			}
-		};
+		function buildTemplatedParts(data) {
+			var source_template,template,html;
+			
+			source_template = config.viewer.footer ? config.viewer.footer : jQuery("script[id='footer-template']").html();
+			template = Handlebars.compile(source_template);
+			html = template(data);	
+			jQuery('body footer').html(html);
+		}
 
 
 		jQuery(function() {
+
+			buildTemplatedParts ( config.data );
+
+			var blockUI_config = {
+				message : null,
+				fadeIn  : 0,
+				fadeOut : 1500,
+				overlayCSS : {
+					backgroundColor : '#fff',
+					opacity : 1
+				}
+			};
+			var blockUI_menu_config = {
+				baseZ : 1000,
+				message : jQuery('div#menu'),
+				fadeIn  : 0,
+				fadeOut : 0,
+				overlayCSS : {
+					backgroundColor : '#000',
+					opacity : 0.85
+				}
+			};
+
 			var markdownBuilder = null;
 
 			jQuery('div.menu-button').click(function() {
@@ -296,13 +316,23 @@
 								</div-->
 							</div>
 
-							<div id="tools" style="display:none">
-								<table>
+							<div id="menu" style="display:none">
+								<table style="td:nth-child(1):{text-align: start}">
 									<tr>
-										<td colspan="2">
+										<td>Theme</a>
+										<td>
 											<select id="theme" />
 										</td>
 									</tr>
+									<tr>
+										<td>Date</a>
+										<td>
+											<input type="checkbox" value="Use default" >Custom format </input><input type="text" />
+										</td>
+									</tr>
+
+								</table>
+								<table>
 									<tr>
 										<td>
 											<a id="share">Sh</a>
@@ -340,10 +370,6 @@
 				<tr>
 					<td>
 						<footer class="main-container reverse-boo" style="font-size: 0.8em; text-align : center" >
-							<span>
-								Martin Der <br/>
-								bla bla bla
-							</span>
 						</footer>
 					</td>
 				</tr>
