@@ -58,6 +58,23 @@
 
 	<script id="markdown-display_on-the-fly-loader" ></script>
 
+	<script id="header-template" type="text/x-handlebars-template">
+		<div style="display: inline-block; text-align: initial;">
+			<table>
+				<tr>
+					<td>
+						<!--img src="image/theme/logo-50px.png?raw" /-->
+					</td>
+					<td>
+						<h1 class="title"><span class="title"></span></h1>
+					</td>
+					<td>
+						<!--img src="image/theme/logo-50px.png" /-->
+					</td>
+				</tr>
+			</table>
+		</div>
+	</script>
 	<script id="footer-template" type="text/x-handlebars-template">
 		<span>
 			{{author.name}}<br/>
@@ -145,7 +162,12 @@
 
 		function buildTemplatedParts(data) {
 			var source_template,template,html;
-			
+
+			source_template = config.viewer.header ? config.viewer.header : jQuery("script[id='header-template']").html();
+			template = Handlebars.compile(source_template);
+			html = template(data);	
+			jQuery('body header').html(html);
+
 			source_template = config.viewer.footer ? config.viewer.footer : jQuery("script[id='footer-template']").html();
 			template = Handlebars.compile(source_template);
 			html = template(data);	
@@ -282,84 +304,68 @@
 	//]]>
 	</script>
 
+	<div id="menu-button" class="reverse-boo" style="z-index : 2000 ; position:absolute; top:1em; left:1em">
+		<!--div class="menu-button flavor-a">
+		  <span></span>
+		  <span></span>
+		  <span></span>
+		</div-->
+		<div class="menu-button flavor-b">
+		  <span></span>
+		  <span></span>
+		  <span></span>
+		  <span></span>
+		  <span></span>
+		  <span></span>
+		</div>
+		<!--div class="menu-button flavor-c">
+		  <span></span>
+		  <span></span>
+		  <span></span>
+		  <span></span>
+		</div>
+		<div class="menu-button flavor-d">
+		  <span></span>
+		  <span></span>
+		  <span></span>
+		</div-->
+	</div>
+
+	<div id="menu" style="display:none">
+		<table style="td:nth-child(1):{text-align: start}">
+			<tr>
+				<td>Theme</a>
+				<td>
+					<select id="theme" />
+				</td>
+			</tr>
+			<tr>
+				<td>Date</a>
+				<td>
+					<input type="checkbox" value="Use default" >Custom format </input><input type="text" />
+				</td>
+			</tr>
+
+		</table>
+		<table>
+			<tr>
+				<td>
+					<a id="share">Sh</a>
+				</td>
+				<td>
+					<a id="download">Dl</a>
+				</td>
+			</tr>
+		</table>
+	</div>
+
+
 	<div id="exported-content" class="viewer body" style="text-align: center">
 		<div style="display: inline-block; text-align: initial;">
 			<table>
 				<tr>
 					<td>
-						<header class="main-container" style="text-align: center">
-
-							<div id="menu-button" class="reverse-boo" style="z-index : 2000 ; position:absolute; top:1em; left:1em">
-								<!--div class="menu-button flavor-a">
-								  <span></span>
-								  <span></span>
-								  <span></span>
-								</div-->
-								<div class="menu-button flavor-b">
-								  <span></span>
-								  <span></span>
-								  <span></span>
-								  <span></span>
-								  <span></span>
-								  <span></span>
-								</div>
-								<!--div class="menu-button flavor-c">
-								  <span></span>
-								  <span></span>
-								  <span></span>
-								  <span></span>
-								</div>
-								<div class="menu-button flavor-d">
-								  <span></span>
-								  <span></span>
-								  <span></span>
-								</div-->
-							</div>
-
-							<div id="menu" style="display:none">
-								<table style="td:nth-child(1):{text-align: start}">
-									<tr>
-										<td>Theme</a>
-										<td>
-											<select id="theme" />
-										</td>
-									</tr>
-									<tr>
-										<td>Date</a>
-										<td>
-											<input type="checkbox" value="Use default" >Custom format </input><input type="text" />
-										</td>
-									</tr>
-
-								</table>
-								<table>
-									<tr>
-										<td>
-											<a id="share">Sh</a>
-										</td>
-										<td>
-											<a id="download">Dl</a>
-										</td>
-									</tr>
-								</table>
-							</div>
-
-							<div style="display: inline-block; text-align: initial;">
-								<table>
-									<tr>
-										<td>
-											<!--img src="image/theme/logo-50px.png?raw" /-->
-										</td>
-										<td>
-											<h1 class="title"><span class="title"></span></h1>
-										</td>
-										<td>
-											<!--img src="image/theme/logo-50px.png" /-->
-										</td>
-									</tr>
-								</table>
-							</div>
-						</header>
+						<header class="main-container" style="text-align: center" />
 					</td>
 				</tr>
 				<tr>
@@ -369,8 +375,7 @@
 				</tr>
 				<tr>
 					<td>
-						<footer class="main-container reverse-boo" style="font-size: 0.8em; text-align : center" >
-						</footer>
+						<footer class="main-container reverse-boo" style="font-size: 0.8em; text-align : center" />
 					</td>
 				</tr>
 			</table>
