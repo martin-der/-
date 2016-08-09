@@ -216,10 +216,14 @@
 			var markdownBuilder = null;
 
 			jQuery('div.menu-button').click(function() {
+				var $menuButton = jQuery('div[id="menu-button"]');
 				jQuery.blockUI(blockUI_menu_config);
 				jQuery(this).toggleClass('open').promise().done(function(){
 					if (!jQuery(this).hasClass('open')) {
 						jQuery.unblockUI(blockUI_menu_config);
+						$menuButton.addClass('reverse-boo');
+					} else {
+						$menuButton.removeClass('reverse-boo');
 					}
 				});
 			});
