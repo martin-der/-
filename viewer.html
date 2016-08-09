@@ -173,9 +173,19 @@
 			html = template(data);	
 			jQuery('body footer').html(html);
 		}
+		
+		function updateLiveElements() {
+			jQuery(".live-date").each(function() {
+				var liveDate = jQuery(this);
+				liveDate.html(MDU.date.toPrettyString(liveDate.attr('live-date')));
+			});
+			setTimeout(updateLiveElements,1000);
+		}
 
 
 		jQuery(function() {
+		
+			setTimeout(updateLiveElements,1000);
 
 			buildTemplatedParts ( config.data );
 
@@ -280,16 +290,22 @@
 							side : 'bottom',
 							delay : [ 0, 350 ],
 							//animation : 'swing',
-							functionInit : function(instance, helper){
+							functionInit : function(instance, helper) {
 								var infoTable = jQuery("<table>");
 								if (data.source.url)
 									infoTable.append( '<tr><td>URL</td><td><a href="'+data.source.url+'">' + MDU.XML.escape(data.source.url) +  '</a></td></tr>' )
 								if (data.source.simplified_url)
 									infoTable.append( '<tr><td>Simplified URL</td><td>' + MDU.XML.escape(data.source.simplified_url) +  '</td></tr>' )
 								if (data.source.modification_date)
-									infoTable.append( '<tr><td>Modified</td><td>' + MDU.XML.escape(data.source.modification_date.toLocaleString()) +  '</td></tr>' )
+									infoTable.append( '<tr><td>Modified</td><td><span class="live-date" live-date="'+data.source.modification_date+'">' + MDU.XML.escape(data.source.modification_date.toLocaleString()) +  '</span></td></tr>' )
 									
 								instance.content(infoTable[0]);
+							},
+							functionReady : function(instance, helper) {
+								jQuery(helper.tooltip).find(".live-date").each(function(){
+									var liveDate = jQuery(this);
+									liveDate.html(MDU.date.toPrettyString(liveDate.attr('live-date')));
+								});
 							}
 						});
 					},
