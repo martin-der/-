@@ -60,12 +60,14 @@ MDU.config.wildValue = {
  *   @Param { url_parameter : string }
  * @Params none
  */
-MDU.WildString = function(a){
+ MDU.WildString = function(a){
         
 	var makeState = function(a) {
 		var a_type = typeof(a);
 
-		if ( a_type === 'object' ) {
+		if ( a instanceof URL ) {
+			return a;
+		} else if ( a_type === 'object' ) {
 			return jQuery.extend(true, {}, a);
 		} else if ( a_type === 'undefined' ) {
 			return {};
@@ -84,20 +86,37 @@ MDU.WildString = function(a){
 			return this.state;
 		},
 		setText : function(text) {
-			this.state = { text : text };
+			if (typeof(text) !== 'string') throw "Expected a String";
+			this.state = text;
+		},
+		setCookieName : function(name) {
+			if (typeof(name) !== 'string') throw "Expected a String as cookie name";
+			this.state = { cookie_name : name };
 		},
 		setUrlParameter : function(parameter) {
+			if (typeof(parameter) !== 'string') throw "Expected a String as url parameter";
 			this.state = { url_parameter : parameter };
 		},
 		set : function(a) {
 			this.state = makeState(a);
 		},
 		get : function() {
-			if (this.state.text !== undefined) {
-					return this.state.text;
+			var state_type = typeof(this.state);
+
+			if (state_type === 'string') {
+					return this.state;
 			}
-			if (this.state.url_parameter !== undefined) {
+			if (this.state instanceof URL) {
+				return jQuery.get(this.state);
+			}
+			if (state_type == 'object') {
+				if (typeof(this.state.cookie_name) !== 'undefined') {
+					if (Cookies) return Cookies.get(this.state.cookie_name);
+					throw "No cookies library available"
+				}
+				if (typeof(this.state.url_parameter) !== 'undefined') {
 					return MDU.getURLParameter(this.state.url_parameter);
+				}
 			}
 			return undefined;
 		}
