@@ -1,0 +1,12 @@
+
+#menu table.option
+{
+	margin : 0 auto;
+}
+
+#menu table>tbody>tr>td:nth-child(1) { 
+	text-align: end; 
+} 
+#menu table>tbody>tr>td:nth-child(2) { 
+	text-align: start; 
+} 
