@@ -216,17 +216,24 @@
 
 			var markdownBuilder = null;
 
-			jQuery('div.menu-button').click(function() {
-				var $menuButton = jQuery('div[id="menu-button"]');
+			function closeMenu() {
+				jQuery.unblockUI(blockUI_menu_config);
+				jQuery('div[id="menu-button"]').addClass('reverse-boo');
+				jQuery('div.menu-button').removeClass('open');
+			}
+			function openMenu() {
+				jQuery('div.menu-button').addClass('open');
 				jQuery.blockUI(blockUI_menu_config);
-				jQuery(this).toggleClass('open').promise().done(function(){
-					if (!jQuery(this).hasClass('open')) {
-						jQuery.unblockUI(blockUI_menu_config);
-						$menuButton.addClass('reverse-boo');
-					} else {
-						$menuButton.removeClass('reverse-boo');
-					}
-				});
+				jQuery('div[id="menu-button"]').removeClass('reverse-boo');
+			}
+			jQuery("div#menu input[type='button']").on('click', closeMenu);
+			jQuery('div.menu-button').click(function() {
+				var $this = jQuery(this);
+				if($this.hasClass('open')) {
+					closeMenu();
+				} else {
+					openMenu();
+				}
 			});
 
 			try {
@@ -357,6 +364,7 @@
 	</div>
 
 	<div id="menu" style="display:none">
+		<h2>Options</h2>
 		<table class="option">
 			<tr>
 				<td>Theme</a>
@@ -372,6 +380,7 @@
 			</tr>
 
 		</table>
+		<h2>Tools</h2>
 		<table>
 			<tr>
 				<td>
@@ -382,6 +391,8 @@
 				</td>
 			</tr>
 		</table>
+		<hr/>
+		<div><input action="neutral" type="button" value="Close"></button></div>
 	</div>
 
 
