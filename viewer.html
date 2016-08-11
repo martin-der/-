@@ -92,6 +92,8 @@
 		config.data.author.name = "Martin Salazard";
 		config.data.author.email = "msalazard@externe.generali.fr";
 
+		var metaTheme = null;
+
 	
 		var themeConfigurator = new Theme.Configurator({
 			post_process : {
@@ -185,10 +187,10 @@
 
 
 		jQuery(function() {
-		
-			setTimeout(updateLiveElements,1000);
 
 			buildTemplatedParts ( config.data );
+
+			setTimeout(updateLiveElements,1000);
 
 			var blockUI_config = {
 				message : null,
@@ -403,7 +405,7 @@
 	</div>
 
 
-	<div id="exported-content" class="viewer body" style="display : none; text-align: center">
+	<div id="exported-content" class="viewer theme" style="display : none; text-align: center">
 		<div style="display: inline-block; text-align: initial;">
 			<table>
 				<tr>
@@ -489,7 +491,7 @@
 }	
 	</style>
 
-	<div class="viewer-body">
+	<div class="viewer theme">
 		<div class="prometa glossy">
 			<div class="screen-twist image-wrap"> 
 			<div class="screen-scroll">
