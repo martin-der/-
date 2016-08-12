@@ -86,14 +86,36 @@
 	<script  type="text/javascript">
 	//<![CDATA[
 
-
 		jQuery.support.cors = true;
 		
+
 		config.data.author.name = "Martin Salazard";
 		config.data.author.email = "msalazard@externe.generali.fr";
 
+
+		var meatData = null;
+		var meatSource = null;
+		var markdownBuilder = null;
+
+		var content_selector = "div.container>div.content";
+		var title_selector = "span.title";
+		var all_selector = content_selector+","+title_selector;
+
 		var metaTheme = null;
 
+		
+		function buildMetaTheme() {
+			var source_template = metaTheme ? jQuery("script[id='viewer-meta-template']").html() : jQuery("script[id='viewer-normal-template']").html();
+			template = Handlebars.compile(source_template);
+			html = template({});	
+			jQuery('body').append(html);
+		}
+		function updateMetaTheme() {
+			jQuery("body>div.viewer.theme").remove();
+			buildMetaTheme();
+			markdownBuilder.buildText(meatData.content);
+			applyPostBuildEffects(meatData);
+		}
 	
 		var themeConfigurator = new Theme.Configurator({
 			post_process : {
@@ -177,20 +199,64 @@
 			jQuery('body footer').html(html);
 		}
 		
-		function updateLiveElements() {
+		function updateLiveJqDateElement(jqDateElement) {
+			jqDateElement.html(MDU.date.toPrettyString(jqDateElement.attr('live-date')));
+		}
+		function updateLiveElements(reschedule) {
 			jQuery(".live-date").each(function() {
-				var liveDate = jQuery(this);
-				liveDate.html(MDU.date.toPrettyString(liveDate.attr('live-date')));
+				updateLiveJqDateElement(jQuery(this));
 			});
-			setTimeout(updateLiveElements,1000);
+			if (reschedule) {
+				setTimeout(function() { updateLiveElements(reschedule); },reschedule);
+			}
+		}
+		
+		function applyPostBuildEffects(builderData) {
+			jQuery(content_selector).find('pre>code').each(function(i, block) {
+				hljs.highlightBlock(block);
+				if (jQuery(block).hasClass('hljs'))
+					jQuery(block).removeClass('hljs');
+			});
+			jQuery(all_selector).css('visibility','visible').animate({opacity:1},1000);
+			jQuery(title_selector).tooltipster({
+				interactive : true,
+				side : 'bottom',
+				delay : [ 0, 350 ],
+				//animation : 'swing',
+				functionInit : function(instance, helper) {
+					var infoTable = jQuery("<table>");
+					if (builderData.source.url)
+						infoTable.append( '<tr><td>URL</td><td><a href="'+builderData.source.url+'">' + MDU.XML.escape(builderData.source.url) +  '</a></td></tr>' )
+					if (builderData.source.simplified_url)
+						infoTable.append( '<tr><td>Simplified URL</td><td>' + MDU.XML.escape(builderData.source.simplified_url) +  '</td></tr>' )
+					if (builderData.source.modification_date)
+						infoTable.append( '<tr><td>Modified</td><td><span class="live-date" live-date="'+builderData.source.modification_date+'">' + MDU.XML.escape(builderData.source.modification_date.toLocaleString()) +  '</span></td></tr>' )
+						
+					instance.content(infoTable[0]);
+				},
+				functionReady : function(instance, helper) {
+					updateLiveElements();
+				}
+			});
 		}
 
 
 		jQuery(function() {
+		
+			buildMetaTheme();
+		
+			jQuery("div[id='menu'] input[id='meta-theme-enable']").on('click', function() {
+				if (jQuery(this).is(':checked')) {
+					metaTheme = 'laptop';
+				} else {
+					metaTheme = null;
+				}
+				updateMetaTheme();
+			});
 
 			buildTemplatedParts ( config.data );
 
-			setTimeout(updateLiveElements,1000);
+			updateLiveElements(1000);
 
 			var blockUI_config = {
 				message : null,
@@ -207,6 +273,7 @@
 				fadeIn  : 0,
 				fadeOut : 0,
 				css : {
+					padding: '1em',
 					cursor : 'default',
 				},
 				overlayCSS : {
@@ -216,7 +283,6 @@
 				}
 			};
 
-			var markdownBuilder = null;
 
 			function closeMenu() {
 				jQuery.unblockUI(blockUI_menu_config);
@@ -245,10 +311,6 @@
 			}
 			moveScroller();
 	
-			var content_selector = "div.container>div.content";
-			var title_selector = "span.title";
-			var all_selector = content_selector+","+title_selector;
-
 			var build_result;
 
 			var specialElementHandlers = {
@@ -291,41 +353,15 @@
 				},
 				pre_process : {
 					build : function(data) {
+						meatContent = null;
 						jQuery(all_selector).css('visibility','hidden').css('opacity','0');
 						return true;
 					}
 				},
 				post_process : {
 					done : function(data) {
-						jQuery(content_selector).find('pre>code').each(function(i, block) {
-							hljs.highlightBlock(block);
-							if (jQuery(block).hasClass('hljs'))
-								jQuery(block).removeClass('hljs');
-						});
-						jQuery(all_selector).css('visibility','visible').animate({opacity:1},1000);
-						jQuery(title_selector).tooltipster({
-							interactive : true,
-							side : 'bottom',
-							delay : [ 0, 350 ],
-							//animation : 'swing',
-							functionInit : function(instance, helper) {
-								var infoTable = jQuery("<table>");
-								if (data.source.url)
-									infoTable.append( '<tr><td>URL</td><td><a href="'+data.source.url+'">' + MDU.XML.escape(data.source.url) +  '</a></td></tr>' )
-								if (data.source.simplified_url)
-									infoTable.append( '<tr><td>Simplified URL</td><td>' + MDU.XML.escape(data.source.simplified_url) +  '</td></tr>' )
-								if (data.source.modification_date)
-									infoTable.append( '<tr><td>Modified</td><td><span class="live-date" live-date="'+data.source.modification_date+'">' + MDU.XML.escape(data.source.modification_date.toLocaleString()) +  '</span></td></tr>' )
-									
-								instance.content(infoTable[0]);
-							},
-							functionReady : function(instance, helper) {
-								jQuery(helper.tooltip).find(".live-date").each(function(){
-									var liveDate = jQuery(this);
-									liveDate.html(MDU.date.toPrettyString(liveDate.attr('live-date')));
-								});
-							}
-						});
+						meatData = data;
+						applyPostBuildEffects(data);
 					},
 					fail : function(data, error) {
 						jQuery.growl.error({ title: "Load failed", fixed:true, message: "Loading '"+data.source.url+"' : "+error });
@@ -405,49 +441,50 @@
 	</div>
 
 
-	<div id="exported-content" class="viewer theme" style="display : none; text-align: center">
-		<div style="display: inline-block; text-align: initial;">
-			<table>
-				<tr>
-					<td>
-						<header class="main-container" style="text-align: center" />
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<div class="main-container container"><div class="content markdown"></div></div>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<footer class="main-container reverse-boo" style="font-size: 0.8em; text-align : center" />
-					</td>
-				</tr>
-			</table>
+	<script id="viewer-normal-template" type="text/x-handlebars-template">
+		<div id="exported-content" class="viewer theme" style="text-align: center">
+			<div style="display: inline-block; text-align: initial;">
+				<table>
+					<tr>
+						<td>
+							<header class="main-container" style="text-align: center" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<div class="main-container container"><div class="content markdown"></div></div>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<footer class="main-container reverse-boo" style="font-size: 0.8em; text-align : center" />
+						</td>
+					</tr>
+				</table>
+			</div>
 		</div>
-	</div>
+	</script>
 	
 	<style>
 		.prometa {
 			background-image: url('image/hero-edge_1399x600.jpg');
 			background-position: top;
 			background-repeat: no-repeat;
-			margin: 0;
+			margin: 0 auto;
 			padding: 0;
 			width: 1399px;
 			height: 600px;
 			overflow: hidden;
-			position: absolute;
 		}
 
 		.prometa>header {
 			background : none;
-			position: absolute;
+			position: relative;
 			top: 10px;
 			left: 20px;
 		}
 		.prometa .screen-twist {
-			position: absolute;
+			position: relative;
 			background : white;
 			top: 0;
 			left: -105px;
@@ -491,19 +528,18 @@
 }	
 	</style>
 
-	<div class="viewer theme">
-		<div class="prometa glossy">
-			<div class="screen-twist image-wrap"> 
-			<div class="screen-scroll">
-			<div class="" style="background:white;">
-				<div class="container"><div class="content"></div></div>
+	<script id="viewer-meta-template" type="text/x-handlebars-template">
+		<div class="viewer theme">
+			<div class="prometa glossy">
+				<div class="screen-twist image-wrap"> 
+					<div class="screen-scroll">
+						<div class="container"><div class="content"></div></div>
+					</div>
+				</div>
+				<header style="text-align: center; padding-left: 70px"/>
 			</div>
-			</div>
-			</div>
-			<header style="text-align: center; padding-left: 70px"/>
-
 		</div>
-	</div>
+	</script>
 	
 </body>
 </html>

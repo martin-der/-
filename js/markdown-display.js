@@ -432,6 +432,14 @@ MarkdownDisplay.Builder = function(a) {
 				}
 			}
 		},
+		buildText : function ( text, source ) {
+			var data = {
+				source : jQuery.extend(true,{},source),
+				content : text,
+				title : this.config.content.title
+			};
+			this.buildPage ( data, this.config.content.target.content_selector, this.config.content.target.title_selector );
+		},
 		acquireThenBuild : function(config) {
 			var local_config = jQuery.extend(true, {}, this.config, config);
 
