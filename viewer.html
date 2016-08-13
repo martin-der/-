@@ -109,6 +109,7 @@
 			template = Handlebars.compile(source_template);
 			html = template({});	
 			jQuery('body').append(html);
+			buildTemplatedParts ( config.data );
 		}
 		function updateMetaTheme() {
 			jQuery("body>div.viewer.theme").remove();
@@ -254,7 +255,6 @@
 				updateMetaTheme();
 			});
 
-			buildTemplatedParts ( config.data );
 
 			updateLiveElements(1000);
 
