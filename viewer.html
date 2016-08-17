@@ -5,11 +5,11 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 	
-	<link rel="stylesheet" href="https://cdn.rawgit.com/martin-work/web-util/master/static/css/common.css" />
-	<script type="text/javascript" src="https://cdn.rawgit.com/martin-work/web-util/master/static/js/misc.js"></script>
+	<!--link rel="stylesheet" href="https://cdn.rawgit.com/martin-work/web-util/master/static/css/common.css" />
+	<script type="text/javascript" src="https://cdn.rawgit.com/martin-work/web-util/master/static/js/misc.js"></script-->
 	<link rel="stylesheet" href="css/viewer.css" />
 	<link rel="stylesheet" href="css/viewer-main.css" />
-	<link rel="stylesheet" href="https://cdn.rawgit.com/martin-work/web-util/master/static/css/stackedit/export.css" />
+	<!--link rel="stylesheet" href="https://cdn.rawgit.com/martin-work/web-util/master/static/css/stackedit/export.css" /-->
 	<script type="text/javascript" src="js/js.cookie.js"></script>
 	<script type="text/javascript" src="js/mdu.js"></script>
 
@@ -24,7 +24,7 @@
 	<script type="text/javascript" src="js/tooltipster.bundle.min.js"></script>
 	<link href="css/tooltipster.bundle.min.css" rel="stylesheet" type="text/css" />
 	<script type="text/javascript" src="js/handlebars-v4.0.5.js"></script>
-	<script type="text/javascript" src="js/jss.js"></script>
+	<script type="text/javascript" src="js/absurd.min.js"></script>
 	<!--script type="text/javascript" src="js/showdown.min.js"></script-->
 	<!--script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script-->
 	<!--script type="text/javascript" src="js/MathJax.js"></script-->
@@ -112,7 +112,7 @@
 			buildTemplatedParts ( config.data );
 		}
 		function updateMetaTheme() {
-			jQuery("body>div.viewer.theme").remove();
+			jQuery("body>div.theme").remove();
 			buildMetaTheme();
 			markdownBuilder.buildText(meatData.content);
 			applyPostBuildEffects(meatData);
@@ -442,7 +442,7 @@
 
 
 	<script id="viewer-normal-template" type="text/x-handlebars-template">
-		<div id="exported-content" class="viewer theme" style="text-align: center">
+		<div id="exported-content" class="theme" style="text-align: center">
 			<div style="display: inline-block; text-align: initial;">
 				<table>
 					<tr>
@@ -529,7 +529,7 @@
 	</style>
 
 	<script id="viewer-meta-template" type="text/x-handlebars-template">
-		<div class="viewer theme">
+		<div class="theme">
 			<div class="prometa glossy">
 				<div class="screen-twist image-wrap"> 
 					<div class="screen-scroll">
