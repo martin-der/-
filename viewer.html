@@ -283,21 +283,32 @@
 				}
 			};
 
-
+			function isMenuOpened() {
+				return jQuery('div.menu-button').hasClass('open');
+			}
 			function closeMenu() {
+				if ( ! isMenuOpened() ) return;
 				jQuery.unblockUI(blockUI_menu_config);
 				jQuery('div[id="menu-button"]').addClass('reverse-boo');
 				jQuery('div.menu-button').removeClass('open');
 			}
 			function openMenu() {
+				if ( isMenuOpened() ) return;
 				jQuery('div.menu-button').addClass('open');
 				jQuery.blockUI(blockUI_menu_config);
 				jQuery('div[id="menu-button"]').removeClass('reverse-boo');
 			}
+			jQuery("div#menu").on('keyup',function(event) {
+				var $this = jQuery(this);
+				if (event.keyCode === 27) {
+					if(isMenuOpened()) {
+						closeMenu();
+					}
+				}
+			});
 			jQuery("div#menu input[type='button']").on('click', closeMenu);
 			jQuery('div.menu-button').click(function() {
-				var $this = jQuery(this);
-				if($this.hasClass('open')) {
+				if(isMenuOpened()) {
 					closeMenu();
 				} else {
 					openMenu();
