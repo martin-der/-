@@ -1,4 +1,6 @@
 
+/* require : mdu.js absurd.js */
+
 var Theme = Theme || {};
 
 Theme.config = {};
@@ -44,9 +46,69 @@ Theme.Configurator = Theme.Configurator || function(a) {
 	
 	var config = a ? jQuery.extend(true, {}, Theme.config.configurator, a ) : jQuery.extend(true, {}, Theme.config.configurator );
 
-	return {
+	var absurdJs = typeof (Absurd) == 'function' ? Absurd() : null ;
+	var absurd_custom = {
+		plugin : {
+			fontface : function (api, value) {
+				var values = {};
+				for ( var index in value.declarations ) {
+					var declaration = value.declarations[index];
+					values[declaration.property] = declaration.value;
+				}
+				var fontface = { '@font-face': values };
+				api.add(fontface);
+				return fontface;
+			}
+		},
+		builder : {
+			hook : {
+				add_themize : function(config) {
+					config = config || {};
+					var bodyAndHtmlToClass = config.bodyAndHtmlToClass || false;
+					return function (rules,stylesheet) {
+						for ( var property in rules ) {
+
+							if ( /^@/.exec(property) ) continue;
+
+							var rule = rules[property];
+
+							if (/^____raw_/.exec(property)) {
+								//this.importCSS(rule[property]);
+								continue;
+							}
+
+							if (property == 'body') {
+								if (bodyAndHtmlToClass) {
+									rules['.body'] = rule;
+									delete rules[property];
+								}
+								continue;
+							}
+							if (property == 'html') {
+								if (bodyAndHtmlToClass) {
+									rules['.html'] = rule;
+									delete rules[property];
+								}
+								continue;
+							}
+
+							rules['.theme '+property] = rule;
+							delete rules[property];
+						}
+						return false;
+					};
+				}
+			}
+		}
+	};
+
+
+	var this_configurator = {
 		actual : null,
 		config : config,
+		backend : {
+			css_processor : absurdJs
+		},
 		setup : function() {
 
 			var head = jQuery("html>head");
@@ -84,7 +146,13 @@ Theme.Configurator = Theme.Configurator || function(a) {
 				}
 			}
 		
-			var this_configurator = this;
+
+			/*if ( this_configurator.backend.css_processor ) {
+				var absurd = this_configurator.backend.css_processor;
+				absurd.plugin("font-face",absurd_custom.plugin.fontface);
+				absurd.hook('add', absurd_custom.builder.hook.add_themize({}));
+			}*/
+
 
 			themeSelects.on('change', function (e) {
 				var option = jQuery('option:selected', this);
@@ -126,12 +194,25 @@ Theme.Configurator = Theme.Configurator || function(a) {
 		setTheme : function ( name ) {
 			this.loadTheme ( name, "user" );
 		},
+		processCSSModification : function ( css, css_file ) {
+			//if ( this.backend.css_processor ) {
+				var config = {
+					bodyAndHtmlToClass : css_file.name == 'main'
+				};
+				this.backend.css_processor = Absurd();
+				var absurd = this.backend.css_processor;
+				absurd.plugin("font-face",absurd_custom.plugin.fontface);
+				absurd.hook('add', absurd_custom.builder.hook.add_themize(config));
+				absurd.importCSS(css);
+				var processed_css = absurd.compile();
+				return processed_css;
+			//}
+			//return css;
+		},
 		loadTheme : function ( name, trigger ) {
 			var urlPrefix = '';
 			
 			var context = { trigger : trigger };
-			
-			var this_configurator = this;
 			
 			var i;
 			
@@ -180,7 +261,11 @@ Theme.Configurator = Theme.Configurator || function(a) {
 			var jqXHR_done_handler_builder = function(css_file) {
 				return function(data, textStatus, jqXHR) {
 					var prefix = (css_file.url.indexOf('/') > -1) ? MDU.string.dirname(css_file.url) : "";
-					css_file.content = data.replace(/url\((['"]?)(.+?)\1\)/g, "url('"+prefix+"$2')");
+					var css = data.replace(/url\((['"]?)(.+?)\1\)/g, "url('"+prefix+"$2')");
+					//if (css_file.name == 'main')
+						css_file.content = this_configurator.processCSSModification ( css, css_file );
+					//else
+					//	css_file.content = css;
 				};
 			};
 			var jqXHR_fail_handler_builder = function(css_file) {
@@ -241,6 +326,8 @@ Theme.Configurator = Theme.Configurator || function(a) {
 				.always(jqXHR_always_handler_builder(css_files.mandatory));
 
 		}
-	}
+	};
+
+	return this_configurator;
 }; 
 

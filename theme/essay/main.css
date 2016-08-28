@@ -5,57 +5,57 @@
 	font-family: 'Wolf_in_the_City_Light';
 	font-style: normal;
 	font-weight: 400;
-	src: local('Wolf_in_the_City_Light'), url(./font/Wolf in the City Light.ttf)
+	src: local('Wolf_in_the_City_Light'), url(./font/Wolf in the City Light.ttf);
 }
 @font-face {
 	font-family: 'master_of_break';
 	font-style: normal;
 	font-weight: 300;
-	src: local('master_of_break'), url(./font/master_of_break.ttf)
+	src: local('master_of_break'), url(./font/master_of_break.ttf);
 }
 @font-face {
 	font-family: 'ChopinScript';
 	font-style: normal;
 	font-weight: 300;
-	src: local('ChopinScript'), url(./font/ChopinScript.otf)
+	src: local('ChopinScript'), url(./font/ChopinScript.otf);
 }
 @font-face {
 	font-family: 'angelface';
 	font-style: normal;
 	font-weight: 400;
-	src: local('angelface'), url(./font/Angelface.otf)
+	src: local('angelface'), url(./font/Angelface.otf);
 }
 @font-face {
 	font-family: 'Distant_Stroke';
 	font-style: normal;
 	font-weight: 100;
 	font-weight: 100;
-	src: local('Distant_Stroke'), url(./font/Distant_Stroke.otf)
+	src: local('Distant_Stroke'), url(./font/Distant_Stroke.otf);
 }
 @font-face {
 	font-family: 'Indie Flower';
 	font-style: normal;
 	font-weight: 100;
 	font-weight: 100;
-	src: local('Indie Flower'), url(./font/IndieFlower.ttf)
+	src: local('Indie Flower'), url(./font/IndieFlower.ttf);
 }
 @font-face {
 	font-family: 'Pacifico';
 	font-style: normal;
 	font-weight: 100;
-	src: local('Pacifico'), url(./font/Pacifico.ttf)
+	src: local('Pacifico'), url(./font/Pacifico.ttf);
 }
 @font-face {
 	font-family: 'Dancing Script Bold';
 	font-style: bold;
 	font-weight: 100;
-	src: local('Dancing Script-Bold'), url(./font/DancingScript-Bold.ttf)
+	src: local('Dancing Script-Bold'), url(./font/DancingScript-Bold.ttf);
 }
 @font-face {
 	font-family: 'Dancing Script';
 	font-style: normal;
 	font-weight: 100;
-	src: local('Dancing Script'), url(./font/DancingScript.ttf)
+	src: local('Dancing Script'), url(./font/DancingScript.ttf);
 }
 /*@import 'https://fonts.googleapis.com/css?family=Indie+Flower|Pacifico';*/
 

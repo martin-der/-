@@ -297,7 +297,6 @@ MarkdownDisplay.Builder = function(a) {
 
 	var builder = { 
 		config : config,
-		result : {},
 		appendToData : function ( data, url, content ) {
 			return jQuery.extend(true, {}, data, { content : content, source : { url : url } });
 		},
@@ -501,7 +500,7 @@ MarkdownDisplay.Builder = function(a) {
 	if (config.useHistory) { 
 		window.onpopstate = function(event) { 
 			var data = event.state;
-			builder.buildPage(data, config.content.target.content_selector, config.content.target.title_selector); 
+			if ( data ) builder.buildPage(data, config.content.target.content_selector, config.content.target.title_selector); 
 		}; 
 	}
 

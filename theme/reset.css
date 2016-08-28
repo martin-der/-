@@ -9,7 +9,7 @@ body,html {
 	background: none;
 	background-image : none;
 } 
-.viewer.body { 
+.body { 
 	min-height:100%; 
 } 
 

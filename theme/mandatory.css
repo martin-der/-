@@ -1,4 +1,10 @@
 
+
+.body>* {
+	margin: 0 auto;
+	padding: 0.5em;
+}
+
 header td.title  {
 	text-align: center;
 }
