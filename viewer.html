@@ -5,8 +5,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 	
-	<!--link rel="stylesheet" href="https://cdn.rawgit.com/martin-work/web-util/master/static/css/common.css" />
-	<script type="text/javascript" src="https://cdn.rawgit.com/martin-work/web-util/master/static/js/misc.js"></script-->
+	<link rel="stylesheet" href="https://cdn.rawgit.com/martin-work/web-util/master/static/css/common.css" />
+	<script type="text/javascript" src="https://cdn.rawgit.com/martin-work/web-util/master/static/js/misc.js"></script>
 	<link rel="stylesheet" href="css/viewer.css" />
 	<link rel="stylesheet" href="css/viewer-main.css" />
 	<!--link rel="stylesheet" href="https://cdn.rawgit.com/martin-work/web-util/master/static/css/stackedit/export.css" /-->
@@ -55,7 +55,7 @@
 	<script type="text/javascript" src="config.js"></script>
 
 </head>
-<body>
+<body style="margin:0px;">
 
 	<script id="markdown-display_on-the-fly-loader" ></script>
 
@@ -97,7 +97,7 @@
 		var meatSource = null;
 		var markdownBuilder = null;
 
-		var content_selector = "div.container>div.content";
+		var content_selector = "div.container div.content";
 		var title_selector = "span.title";
 		var all_selector = content_selector+","+title_selector;
 
@@ -318,6 +318,7 @@
 			try {
 				themeConfigurator.setup();
 			} catch (ex) {
+				if (console && console.error) console.error("Cannot set theme", ex);
 				jQuery.growl.warning({title: "Cannot set theme", message: ex});
 			}
 			moveScroller();
@@ -454,7 +455,7 @@
 
 	<script id="viewer-normal-template" type="text/x-handlebars-template">
 		<div id="exported-content" class="theme" style="text-align: center">
-			<div style="display: inline-block; text-align: initial;">
+			<div class="body" style="display: inline-block; text-align: initial;">
 				<table>
 					<tr>
 						<td>
@@ -541,10 +542,10 @@
 
 	<script id="viewer-meta-template" type="text/x-handlebars-template">
 		<div class="theme">
-			<div class="prometa glossy">
+			<div class="prometa glossy ">
 				<div class="screen-twist image-wrap"> 
 					<div class="screen-scroll">
-						<div class="container"><div class="content"></div></div>
+						<div class="container body"><div class="main-container"><div class="content"></div></div></div>
 					</div>
 				</div>
 				<header style="text-align: center; padding-left: 70px"/>
