@@ -5,6 +5,10 @@
 	padding: 0.5em;
 }
 
+.body .main-container.container>div.content p>img {
+	max-width: 100%;
+}
+
 header td.title  {
 	text-align: center;
 }
